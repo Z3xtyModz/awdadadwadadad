@@ -1,811 +1,1148 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mount Olympus: Aegis of the Gods - WebGL Engine</title>
-    <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.0/dist/phaser.min.js"></script>
-    <style>
-        :root {
-            --gold: #f1c40f;
-            --bronze: #cd7f32;
-            --dark: #0b0e14;
-            --panel: rgba(18, 24, 34, 0.95);
-            --font: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plinko Deluxe: Cosmic Skill Tree</title>
+  <style>
+    :root {
+      --bg: #0f111a;
+      --panel-bg: #181b2e;
+      --panel-border: #2d3254;
+      --accent-pink: #ff3366;
+      --accent-cyan: #00d2ff;
+      --accent-yellow: #ffcc00;
+      --accent-green: #2ed573;
+      --accent-purple: #a55eea;
+      --accent-gem: #e056fd;
+      --text-main: #ffffff;
+      --text-sub: #8e97c6;
+    }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
-        body { background: var(--dark); color: #fff; font-family: var(--font); overflow: hidden; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        #game-wrapper { position: relative; width: 1280px; height: 720px; border: 3px solid var(--bronze); box-shadow: 0 0 30px rgba(0,0,0,0.9); }
-        
-        .ui-panel { position: absolute; background: var(--panel); border: 2px solid var(--bronze); border-radius: 8px; padding: 12px; pointer-events: auto; display: none; z-index: 100; }
-        
-        #talent-modal { position: absolute; top: 30px; left: 140px; width: 1000px; height: 660px; background: var(--panel); border: 3px solid var(--gold); border-radius: 12px; z-index: 200; display: none; padding: 20px; box-shadow: 0 0 50px #000; }
-        .talent-header { font-size: 22px; color: var(--gold); text-align: center; font-weight: bold; margin-bottom: 15px; border-bottom: 2px solid var(--bronze); padding-bottom: 10px; }
-        .talent-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; height: 520px; }
-        .talent-column { background: rgba(0,0,0,0.4); border: 1px solid var(--bronze); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
-        .column-title { text-align: center; font-weight: bold; color: var(--gold); font-size: 15px; margin-bottom: 5px; }
-        .talent-node { background: #1a252f; border: 2px solid var(--bronze); border-radius: 6px; padding: 8px; cursor: pointer; transition: all 0.2s; }
-        .talent-node:hover { border-color: var(--gold); transform: scale(1.02); }
-        .talent-node.unlocked { border-color: #2ecc71; background: #1e8449; }
-        .talent-name { font-weight: bold; font-size: 13px; color: #fff; }
-        .talent-desc { font-size: 11px; color: #bdc3c7; margin-top: 2px; }
-        
-        #tower-context { width: 280px; }
-        .ctx-title { font-size: 15px; font-weight: bold; color: var(--gold); text-align: center; border-bottom: 1px solid var(--bronze); padding-bottom: 6px; margin-bottom: 8px; }
-        .ctx-stats { font-size: 11px; color: #ecf0f1; margin-bottom: 10px; line-height: 1.5; }
-        .ctx-btn { width: 100%; padding: 8px; margin-top: 6px; background: linear-gradient(180deg, #34495e, #2c3e50); border: 1px solid var(--gold); color: #fff; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer; text-align: left; display: flex; flex-direction: column; gap: 2px; }
-        .ctx-btn:hover:not(:disabled) { background: #455a64; }
-        .ctx-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Fredoka', 'Quicksand', system-ui, -apple-system, sans-serif;
+      user-select: none;
+    }
 
-        #hud-top { position: absolute; top: 0; left: 0; width: 100%; height: 48px; background: rgba(11, 14, 20, 0.9); border-bottom: 2px solid var(--bronze); display: flex; justify-content: space-between; align-items: center; padding: 0 20px; z-index: 10; pointer-events: auto; }
-        .hud-group { display: flex; gap: 20px; font-weight: bold; font-size: 14px; }
-        .hud-val { color: var(--gold); }
-        .hud-btn { background: #2c3e50; border: 1px solid var(--gold); color: #fff; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; }
-        .hud-btn:hover { background: #34495e; }
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(255, 51, 102, 0.12) 0%, transparent 40%),
+        radial-gradient(circle at 85% 85%, rgba(224, 86, 253, 0.12) 0%, transparent 40%);
+    }
 
-        /* Restored Bottom Build Selector Dock */
-        #build-bar { position: absolute; bottom: 0; left: 0; width: 100%; height: 60px; background: rgba(11, 14, 20, 0.95); border-top: 2px solid var(--bronze); display: flex; justify-content: center; align-items: center; gap: 10px; z-index: 10; pointer-events: auto; }
-        .build-btn { background: #1a252f; border: 2px solid var(--bronze); border-radius: 6px; padding: 6px 12px; color: #fff; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; align-items: center; }
-        .build-btn:hover { border-color: var(--gold); background: #2c3e50; }
-        .build-btn.active { border-color: #2ecc71; background: #27ae60; }
-        .build-cost { font-size: 10px; color: var(--gold); }
-    </style>
+    .game-container {
+      display: flex;
+      flex-direction: row;
+      gap: 16px;
+      padding: 16px;
+      max-width: 1120px;
+      width: 100%;
+      height: 780px;
+    }
+
+    .card {
+      background: var(--panel-bg);
+      border: 4px solid var(--panel-border);
+      border-radius: 20px;
+      box-shadow: 0 10px 0 rgba(0, 0, 0, 0.35);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .canvas-card {
+      align-items: center;
+      gap: 10px;
+    }
+
+    canvas {
+      border-radius: 16px;
+      background: #090a12;
+      border: 3px solid #232742;
+    }
+
+    .shop-card {
+      flex: 1;
+      gap: 10px;
+      overflow: hidden;
+    }
+
+    /* Top Stats Dashboard */
+    .header-stats {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      background: #0f111a;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 3px solid #2d3254;
+      text-align: center;
+    }
+
+    .stat-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .stat-label {
+      font-size: 0.65rem;
+      color: var(--text-sub);
+      text-transform: uppercase;
+      font-weight: 800;
+    }
+
+    .stat-value {
+      font-size: 1.15rem;
+      font-weight: 900;
+    }
+
+    /* Controls */
+    .bet-control-container {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      background: #0f111a;
+      padding: 8px 12px;
+      border-radius: 14px;
+      border: 3px solid #2d3254;
+    }
+
+    .bet-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.7rem;
+      color: var(--text-sub);
+      font-weight: 800;
+    }
+
+    .bet-row {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .bet-input {
+      width: 90px;
+      background: #181b2e;
+      border: 2px solid #2d3254;
+      border-radius: 8px;
+      color: var(--accent-yellow);
+      font-size: 0.95rem;
+      font-weight: 900;
+      padding: 4px 6px;
+      text-align: center;
+      outline: none;
+    }
+
+    .bet-btn {
+      flex: 1;
+      background: #2d3254;
+      border: none;
+      border-bottom: 3px solid #1a1c2e;
+      color: white;
+      padding: 6px 0;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .bet-btn:active {
+      transform: translateY(2px);
+      border-bottom-width: 1px;
+    }
+
+    .btn-drop {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 14px;
+      font-size: 1.1rem;
+      font-weight: 900;
+      cursor: pointer;
+      text-transform: uppercase;
+      background: linear-gradient(180deg, #00e5ff 0%, #0088ff 100%);
+      color: white;
+      border-bottom: 4px solid #0055b3;
+      box-shadow: 0 4px 12px rgba(0, 210, 255, 0.3);
+    }
+
+    .btn-drop:active:not(:disabled) {
+      transform: translateY(2px);
+      border-bottom-width: 2px;
+    }
+
+    .btn-drop:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      border-bottom-color: #444;
+      box-shadow: none;
+    }
+
+    /* Tabs Bar */
+    .tab-container {
+      display: flex;
+      gap: 6px;
+      border-bottom: 3px solid var(--panel-border);
+      padding-bottom: 6px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 8px 4px;
+      border: none;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 0.75rem;
+      cursor: pointer;
+      background: #0f111a;
+      color: var(--text-sub);
+      border-bottom: 3px solid #090a12;
+    }
+
+    .tab-btn.active {
+      background: var(--accent-pink);
+      color: white;
+      border-bottom: 3px solid #b3003b;
+    }
+
+    /* Upgrade & Custom List Panels */
+    .panel-content {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      overflow-y: auto;
+      padding-right: 4px;
+      height: 100%;
+    }
+
+    .upgrade-item {
+      background: #0f111a;
+      border: 3px solid #2d3254;
+      border-radius: 14px;
+      padding: 8px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .upgrade-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .upgrade-name {
+      font-weight: 800;
+      font-size: 0.85rem;
+    }
+
+    .upgrade-desc {
+      font-size: 0.7rem;
+      color: var(--text-sub);
+    }
+
+    .upgrade-btn {
+      background: var(--accent-green);
+      border: none;
+      border-bottom: 3px solid #1e8b49;
+      color: white;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 0.75rem;
+      cursor: pointer;
+      min-width: 85px;
+      text-align: center;
+    }
+
+    .upgrade-btn:disabled {
+      opacity: 0.4;
+      background: #4b5563;
+      border-bottom-color: #374151;
+      cursor: not-allowed;
+    }
+
+    /* Skill Tree Styling */
+    .skill-tree-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .skill-card {
+      background: #0f111a;
+      border: 3px solid #2d3254;
+      border-radius: 14px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      position: relative;
+    }
+
+    .skill-card.unlocked {
+      border-color: var(--accent-gem);
+      background: radial-gradient(circle at top left, rgba(224, 86, 253, 0.15), transparent);
+    }
+
+    /* Reset / Prestige Cards */
+    .reset-split-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .reset-card {
+      background: #0f111a;
+      border: 3px dashed var(--panel-border);
+      border-radius: 16px;
+      padding: 14px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .reset-card.rebirth-card { border-color: var(--accent-purple); }
+    .reset-card.prestige-card { border-color: var(--accent-gem); }
+
+    .btn-reset {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 900;
+      cursor: pointer;
+      color: white;
+    }
+
+    .btn-rebirth-action {
+      background: linear-gradient(180deg, #a55eea 0%, #7d32c3 100%);
+      border-bottom: 4px solid #55198d;
+    }
+
+    .btn-prestige-action {
+      background: linear-gradient(180deg, #e056fd 0%, #be2ed6 100%);
+      border-bottom: 4px solid #8e1da3;
+    }
+
+    .btn-reset:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      border-bottom-color: #333;
+    }
+  </style>
 </head>
 <body>
 
-<div id="game-wrapper">
-    <div id="hud-top">
-        <div class="hud-group">
-            <div>HP: <span id="hud-hp" class="hud-val">20</span></div>
-            <div>Gold: <span id="hud-gold" class="hud-val">450</span></div>
-            <div>Favor: <span id="hud-favor" class="hud-val">0</span>/100</div>
-            <div>Wave: <span id="hud-wave" class="hud-val">1</span>/15</div>
+  <div class="game-container">
+    <div class="card canvas-card">
+      <canvas id="plinko" width="460" height="490"></canvas>
+
+      <div class="bet-control-container">
+        <div class="bet-header">
+          <span>BALL BET VALUE</span>
+          <span id="equippedBallName" style="color: var(--accent-cyan);">Equipped: Standard Neon</span>
         </div>
-        <div class="hud-group">
-            <button id="btn-talents" class="hud-btn">Ascension Tree</button>
-            <button id="btn-start-wave" class="hud-btn" style="border-color:#2ecc71; color:#2ecc71;">Start Wave</button>
+        <div class="bet-row">
+          <input type="text" id="betInput" class="bet-input" value="10">
+          <button class="bet-btn" id="btnHalf">½x</button>
+          <button class="bet-btn" id="btnDouble">2x</button>
+          <button class="bet-btn" id="btnTenPct">10%</button>
+          <button class="bet-btn" id="btnMax">MAX</button>
         </div>
+      </div>
+
+      <div style="width: 100%;">
+        <button id="dropBtn" class="btn-drop">Drop Ball ($<span id="dropCost">10</span>)</button>
+      </div>
     </div>
 
-    <div id="game-container"></div>
-
-    <div id="build-bar">
-        <button class="build-btn active" data-type="zeus">⚡ Zeus<span class="build-cost">100G</span></button>
-        <button class="build-btn" data-type="poseidon">🌊 Poseidon<span class="build-cost">120G</span></button>
-        <button class="build-btn" data-type="hephaestus">🔥 Vulcan<span class="build-cost">140G</span></button>
-        <button class="build-btn" data-type="artemis">🏹 Artemis<span class="build-cost">130G</span></button>
-        <button class="build-btn" data-type="hades">💀 Hades<span class="build-cost">150G</span></button>
-        <button class="build-btn" data-type="chronos">⏳ Chronos<span class="build-cost">135G</span></button>
-        <button class="build-btn" data-type="barricade">🛡️ Aegis Wall<span class="build-cost">50G</span></button>
-    </div>
-
-    <div id="tower-context" class="ui-panel">
-        <div id="ctx-name" class="ctx-title">Zeus Spire</div>
-        <div id="ctx-stats" class="ctx-stats"></div>
-        <button id="btn-up-a" class="ctx-btn"><span id="title-up-a">Branch A</span><span id="desc-up-a" style="font-weight:normal;color:#bdc3c7;"></span></button>
-        <button id="btn-up-b" class="ctx-btn"><span id="title-up-b">Branch B</span><span id="desc-up-b" style="font-weight:normal;color:#bdc3c7;"></span></button>
-        <button id="btn-sell" class="ctx-btn" style="border-color:#e74c3c; margin-top:10px;"><span style="color:#e74c3c;">Deconstruct Tower</span><span id="cost-sell" style="font-weight:normal;color:#bdc3c7;">Recycle for 50G</span></button>
-    </div>
-
-    <div id="talent-modal">
-        <div class="talent-header">Ascension Talent Tree Matrix (Unspent Essence: <span id="talent-points">0</span>)</div>
-        <div class="talent-grid">
-            <div class="talent-column" id="col-offense">
-                <div class="column-title">Offensive Might</div>
-            </div>
-            <div class="talent-column" id="col-defense">
-                <div class="column-title">Olympian Defense</div>
-            </div>
-            <div class="talent-column" id="col-economy">
-                <div class="column-title">Divine Economy</div>
-            </div>
+    <div class="card shop-card">
+      <div class="header-stats">
+        <div class="stat-box">
+          <span class="stat-label">Balance</span>
+          <span class="stat-value" id="balance" style="color: var(--accent-yellow);">$250</span>
         </div>
-        <button id="btn-close-talents" class="hud-btn" style="margin-top: 15px; width: 100%;">Close Matrix</button>
+        <div class="stat-box">
+          <span class="stat-label">Stars (Rebirth)</span>
+          <span class="stat-value" id="starsStat" style="color: var(--accent-purple);">0 ⭐</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">Gems (Prestige)</span>
+          <span class="stat-value" id="gemsStat" style="color: var(--accent-gem);">0 💎</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">Passive</span>
+          <span class="stat-value" id="passiveStat" style="color: var(--accent-green);">$0/s</span>
+        </div>
+      </div>
+
+      <div class="tab-container">
+        <button class="tab-btn active" id="tabUpgrades">Upgrades</button>
+        <button class="tab-btn" id="tabStars">Stars</button>
+        <button class="tab-btn" id="tabSkillTree">Skill Tree</button>
+        <button class="tab-btn" id="tabBalls">Ball Skins</button>
+        <button class="tab-btn" id="tabResets">Reset/Prestige</button>
+      </div>
+
+      <div class="panel-content" id="panelUpgrades"></div>
+
+      <div class="panel-content" id="panelStars" style="display: none;"></div>
+
+      <div class="panel-content" id="panelSkillTree" style="display: none;">
+        <div class="skill-tree-grid" id="skillTreeList"></div>
+      </div>
+
+      <div class="panel-content" id="panelBalls" style="display: none;"></div>
+
+      <div class="panel-content" id="panelResets" style="display: none;">
+        <div class="reset-split-container">
+          <div class="reset-card rebirth-card">
+            <h3 style="color: var(--accent-purple);">Tier 1: Cosmic Rebirth</h3>
+            <p style="font-size: 0.75rem; color: var(--text-sub);">
+              Resets Cash, Board Rows & Base Upgrades. Grants <b style="color: var(--accent-purple);">Stars (⭐)</b> for meta perk unlocks.
+            </p>
+            <div style="font-weight: 900; font-size: 1rem;">
+              Pending Earnings: <span id="pendingStars" style="color: var(--accent-yellow);">+0 ⭐</span>
+            </div>
+            <div style="font-size: 0.7rem; color: var(--text-sub);">Req: $1.00M Cash</div>
+            <button id="btnRebirth" class="btn-reset btn-rebirth-action" disabled>REBIRTH</button>
+          </div>
+
+          <div class="reset-card prestige-card">
+            <h3 style="color: var(--accent-gem);">Tier 2: Super Prestige</h3>
+            <p style="font-size: 0.75rem; color: var(--text-sub);">
+              Resets Cash, Base Upgrades, Stars AND Star Shop. Grants <b style="color: var(--accent-gem);">Prestige Gems (💎)</b> to spend on the Skill Tree!
+            </p>
+            <div style="font-weight: 900; font-size: 1rem;">
+              Pending Gems: <span id="pendingGems" style="color: var(--accent-gem);">+0 💎</span>
+            </div>
+            <div style="font-size: 0.7rem; color: var(--text-sub);">Req: 50 Stars or $1.00B Cash</div>
+            <button id="btnPrestige" class="btn-reset btn-prestige-action" disabled>SUPER PRESTIGE</button>
+          </div>
+        </div>
+      </div>
     </div>
-</div>
+  </div>
 
-<script>
-/**
- * MOUNT OLYMPUS: AEGIS OF THE GODS
- * Complete Hardened WebGL Architecture
- */
+  <script>
+    // --- LARGE NUMBER SYSTEM ---
+    const SUFFIXES = ['', 'K', 'M', 'B', 'T', 'Qa', 'Qi', 'Sx', 'Sp', 'Oc', 'No', 'Dc', 'Ud', 'Dd', 'Td'];
 
-class AudioEngine {
-    constructor() { this.ctx = null; this.masterVolume = 0.3; }
-    init() {
-        if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-        if (this.ctx.state === 'suspended') this.ctx.resume();
-    }
-    playTone(freq, type = 'sine', duration = 0.2, pan = 0, glideFreq = null) {
-        try {
-            this.init();
-            if (!this.ctx) return;
-            const osc = this.ctx.createOscillator();
-            const gain = this.ctx.createGain();
-            const panner = this.ctx.createStereoPanner ? this.ctx.createStereoPanner() : null;
-
-            osc.type = type;
-            osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-            if (glideFreq) osc.frequency.exponentialRampToValueAtTime(glideFreq, this.ctx.currentTime + duration);
-
-            gain.gain.setValueAtTime(this.masterVolume, this.ctx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
-
-            if (panner) {
-                panner.pan.setValueAtTime(Math.max(-1, Math.min(1, pan)), this.ctx.currentTime);
-                osc.connect(panner); panner.connect(gain);
-            } else { osc.connect(gain); }
-
-            gain.connect(this.ctx.destination);
-            osc.start(); osc.stop(this.ctx.currentTime + duration);
-        } catch (e) {}
-    }
-    playZap(pan = 0) { this.playTone(800, 'sawtooth', 0.15, pan, 150); }
-    playSplash(pan = 0) { this.playTone(180, 'triangle', 0.3, pan, 40); }
-    playCrit(pan = 0) { this.playTone(1200, 'square', 0.25, pan, 300); }
-    playErupt() { this.playTone(80, 'sawtooth', 0.8, 0, 20); }
-}
-
-const audio = new AudioEngine();
-
-const SAVE_KEY = 'olympus_td_commercial_save';
-const TALENT_NODES = [
-    { id: 'off_1', col: 'col-offense', name: 'Divine Might', desc: '+10% Overall Damage', cost: 1, req: null },
-    { id: 'off_2', col: 'col-offense', name: 'Overcharge', desc: '+15% Attack Speed', cost: 1, req: 'off_1' },
-    { id: 'off_3', col: 'col-offense', name: 'Elemental Surge', desc: '+25% Status Reaction Damage', cost: 2, req: 'off_2' },
-    { id: 'off_4', col: 'col-offense', name: 'Precision Lethality', desc: '+15% Critical Strike Chance', cost: 2, req: 'off_3' },
-    { id: 'off_5', col: 'col-offense', name: 'Zeus Apex', desc: 'Shock reaction stuns for +0.5s extra', cost: 3, req: 'off_4' },
-    { id: 'def_1', col: 'col-defense', name: 'Olympian Aegis', desc: '+5 Max Olympus Health', cost: 1, req: null },
-    { id: 'def_2', col: 'col-defense', name: 'Fortified Spires', desc: 'Towers resist status disabling by 50%', cost: 1, req: 'def_1' },
-    { id: 'def_3', col: 'col-defense', name: 'Chronos Ward', desc: 'Slow all enemies globally by 10%', cost: 2, req: 'def_2' },
-    { id: 'def_4', col: 'col-defense', name: 'Retributive Aura', desc: 'Enemies reaching base suffer 100 true damage', cost: 2, req: 'def_3' },
-    { id: 'def_5', col: 'col-defense', name: 'Sanctuary', desc: 'Regenerate 1 Life at wave end', cost: 3, req: 'def_4' },
-    { id: 'eco_1', col: 'col-economy', name: 'Midas Touch', desc: '+100 Bonus Starting Gold', cost: 1, req: null },
-    { id: 'eco_2', col: 'col-economy', name: 'Bounty Hunter', desc: '+2 Extra Gold per Kill', cost: 1, req: 'eco_1' },
-    { id: 'eco_3', col: 'col-economy', name: 'Favor Resonance', desc: '+25% Favor Generation Rate', cost: 2, req: 'eco_2' },
-    { id: 'eco_4', col: 'col-economy', name: 'Architect Discount', desc: '-10% Tower Build & Upgrade Costs', cost: 2, req: 'eco_3' },
-    { id: 'eco_5', col: 'col-economy', name: 'Tribute of Typhon', desc: '+250 Bonus Gold upon Boss Wave Start', cost: 3, req: 'eco_4' }
-];
-
-class PersistenceEngine {
-    constructor() { this.data = this.load(); }
-    load() {
-        const raw = localStorage.getItem(SAVE_KEY);
-        if (raw) { try { return JSON.parse(raw); } catch (e) {} }
-        return { points: 5, unlocked: [], highScore: 0 };
-    }
-    save() { localStorage.setItem(SAVE_KEY, JSON.stringify(this.data)); }
-    isUnlocked(id) { return this.data.unlocked.includes(id); }
-    unlock(id) {
-        const node = TALENT_NODES.find(n => n.id === id);
-        if (!node || this.data.points < node.cost || this.isUnlocked(id)) return false;
-        if (node.req && !this.isUnlocked(node.req)) return false;
-        this.data.points -= node.cost;
-        this.data.unlocked.push(id);
-        this.save();
-        return true;
-    }
-}
-
-const storage = new PersistenceEngine();
-
-const TOWER_SPECS = {
-    zeus: { name: 'Zeus Spire', cost: 100, range: 180, damage: 40, rate: 0.6, color: 0xf1c40f, element: 'shocked', branchA: { name: 'Conduit Master', cost: 160, desc: 'Splits lightning to targets' }, branchB: { name: 'Hyper Sniper', cost: 175, desc: 'Extreme single-target damage' } },
-    poseidon: { name: 'Poseidon Surge', cost: 120, range: 140, damage: 25, rate: 1.2, color: 0x3498db, element: 'wet', branchA: { name: 'Tsunami Wave', cost: 150, desc: 'Heavy AoE knockback wave' }, branchB: { name: 'Maelstrom Pool', cost: 165, desc: 'Persistent vortex slow field' } },
-    hephaestus: { name: 'Vulcan Forge', cost: 140, range: 120, damage: 35, rate: 0.8, color: 0xe67e22, element: 'burned', branchA: { name: 'Magma Eruption', cost: 180, desc: 'Leaves persistent burning pools' }, branchB: { name: 'Molten Melt', cost: 170, desc: 'Completely strips enemy armor' } },
-    artemis: { name: 'Artemis Bow', cost: 130, range: 280, damage: 110, rate: 1.8, color: 0x2ecc71, element: 'physical', branchA: { name: 'Volley Bow', cost: 175, desc: 'Fires 3 arrows in spread' }, branchB: { name: 'Executioner', cost: 190, desc: 'Devastating critical strikes' } },
-    hades: { name: 'Hades Obelisk', cost: 150, range: 130, damage: 2.0, rate: 0.05, color: 0x9b59b6, element: 'cursed', branchA: { name: 'Soul Harvester', cost: 185, desc: 'Gains permanent stacking power' }, branchB: { name: 'Death Aura', cost: 200, desc: 'Curses all enemies globally' } },
-    chronos: { name: 'Chronos Dial', cost: 135, range: 150, damage: 15, rate: 1.0, color: 0x1abc9c, element: 'frozen', branchA: { name: 'Stasis Lock', cost: 170, desc: 'Freezes targets completely 1.5s' }, branchB: { name: 'Entropy Field', cost: 180, desc: 'Accelerates status damage rate' } },
-    barricade: { name: 'Aegis Wall', cost: 50, range: 0, damage: 0, rate: 99, color: 0x7f8c8d, element: 'none', branchA: { name: 'Spike Barrier', cost: 80, desc: 'Reflects melee damage back' }, branchB: { name: 'Reflective Shield', cost: 90, desc: 'Absorbs boss blasts' } }
-};
-
-class BootScene extends Phaser.Scene {
-    constructor() { super('BootScene'); }
-    create() {
-        const gfx = this.make.graphics({ x: 0, y: 0, add: false });
-
-        gfx.clear(); gfx.fillStyle(0x2c3e50, 1); gfx.fillCircle(24, 24, 22);
-        gfx.lineStyle(3, 0xf1c40f, 1); gfx.strokeCircle(24, 24, 22);
-        gfx.generateTexture('tower-base', 48, 48);
-
-        gfx.clear(); gfx.fillStyle(0xd35400, 0.4); gfx.fillRect(0, 0, 64, 60);
-        gfx.lineStyle(2, 0xe67e22, 0.8); gfx.strokeRect(2, 2, 60, 56);
-        gfx.generateTexture('tile-highground', 64, 60);
-
-        gfx.clear(); gfx.fillStyle(0xc0392b, 0.8); gfx.fillTriangle(32, 4, 4, 60, 60, 60);
-        gfx.fillStyle(0xf1c40f, 1); gfx.fillCircle(32, 24, 8);
-        gfx.generateTexture('hazard-volcano', 64, 64);
-
-        gfx.clear(); gfx.fillStyle(0xe74c3c, 1); gfx.fillCircle(16, 16, 14);
-        gfx.fillStyle(0x2c3e50, 1); gfx.fillRect(12, 2, 8, 6);
-        gfx.generateTexture('enemy-satyr', 32, 32);
-
-        gfx.clear(); gfx.fillStyle(0xf39c12, 1); gfx.fillTriangle(16, 2, 2, 30, 30, 30);
-        gfx.generateTexture('enemy-harpy', 32, 32);
-
-        gfx.clear(); gfx.fillStyle(0x7f8c8d, 1); gfx.fillCircle(24, 24, 22);
-        gfx.fillStyle(0xe74c3c, 1); gfx.fillCircle(30, 24, 6);
-        gfx.generateTexture('enemy-cyclops', 48, 48);
-
-        gfx.clear(); gfx.fillStyle(0x8e44ad, 1); gfx.fillCircle(36, 36, 34);
-        gfx.lineStyle(4, 0xf1c40f, 1); gfx.strokeCircle(36, 36, 34);
-        gfx.generateTexture('enemy-typhon', 72, 72);
-
-        gfx.clear(); gfx.fillStyle(0xffffff, 1); gfx.fillCircle(4, 4, 4);
-        gfx.generateTexture('particle-bolt', 8, 8);
-
-        this.scene.start('GameScene');
-    }
-}
-
-class GameScene extends Phaser.Scene {
-    constructor() { super('GameScene'); }
-
-    create() {
-        this.gold = 450 + (storage.isUnlocked('eco_1') ? 100 : 0);
-        this.hp = 20 + (storage.isUnlocked('def_1') ? 5 : 0);
-        this.favor = 0;
-        this.wave = 1;
-        this.waveActive = false;
-        this.selectedTowerType = 'zeus';
-        this.selectedTowerInstance = null;
-        this.spawnQueue = [];
-
-        this.setupMap();
-        this.setupGroups();
-        this.setupInputs();
-        this.setupParticles();
-        this.setupUI();
-
-        this.volcanoCooldown = 0;
+    function formatVal(num) {
+      if (num === null || num === undefined || isNaN(num)) return '0';
+      if (num === 0) return '0';
+      if (num < 0) return '-' + formatVal(-num);
+      if (num < 1000) return num.toFixed(num % 1 === 0 ? 0 : 2);
+      
+      const i = Math.floor(Math.log10(num) / 3);
+      if (i >= SUFFIXES.length) return num.toExponential(2);
+      return (num / Math.pow(10, i * 3)).toFixed(2).replace(/\.00$/, '') + SUFFIXES[i];
     }
 
-    setupMap() {
-        this.pathGround1 = new Phaser.Curves.Path(0, 180);
-        this.pathGround1.lineTo(320, 180).lineTo(320, 480).lineTo(800, 480).lineTo(800, 180).lineTo(1280, 180);
+    function formatCash(num) {
+      return '$' + formatVal(num);
+    }
 
-        this.pathGround2 = new Phaser.Curves.Path(0, 540);
-        this.pathGround2.lineTo(480, 540).lineTo(480, 300).lineTo(1020, 300).lineTo(1020, 540).lineTo(1280, 540);
+    // --- AUDIO SYSTEM ---
+    let audioCtx = null;
+    function playSound(freq, duration, type = 'sine') {
+      try {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContextClass) return;
+        if (!audioCtx) audioCtx = new AudioContextClass();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {}
+    }
 
-        this.pathFlying = new Phaser.Curves.Path(0, 360);
-        this.pathFlying.lineTo(1280, 360);
+    // --- GAME STATE ---
+    let state = {
+      balance: 250,
+      stars: 0,
+      gems: 0,
+      ballValue: 10,
+      rows: 8,
+      pegCash: 0,
+      slotBoost: 1.0,
+      ballsPerDrop: 1,
+      passiveGen: 0,
+      autoDropInterval: null,
+      autoDropSpeedMs: 1000,
+      
+      // Star Perks
+      starIncomeMult: 1.0,
+      starStartCash: 250,
 
-        const pathGfx = this.add.graphics();
-        pathGfx.lineStyle(36, 0x2c3e50, 0.7);
-        this.pathGround1.draw(pathGfx);
-        this.pathGround2.draw(pathGfx);
-        pathGfx.lineStyle(20, 0x34495e, 0.5);
-        this.pathFlying.draw(pathGfx);
+      // Equipped Ball Skin
+      equippedBall: 'cyan',
 
-        this.highGroundNodes = [ { x: 200, y: 100 }, { x: 600, y: 390 }, { x: 920, y: 100 }, { x: 380, y: 390 } ];
-        this.highGroundNodes.forEach(node => {
-            const tile = this.add.image(node.x, node.y, 'tile-highground').setInteractive();
-            tile.isHighGround = true;
+      // Skill Tree Unlocks
+      skills: {
+        gravity: false,
+        critBounce: false,
+        ballSplitter: false,
+        gemBooster: false
+      }
+    };
+
+    // --- BALL SKINS CATALOGUE ---
+    const ballSkins = [
+      { id: 'cyan', name: 'Standard Neon', color: '#00d2ff', mult: 1.0, unlocked: true, costText: 'Default' },
+      { id: 'magma', name: 'Magma Orb', color: '#ff3366', mult: 1.35, unlocked: false, cost: 5, currency: 'stars', costText: '5 ⭐' },
+      { id: 'bomb', name: 'Bomb Ball', color: '#ffcc00', mult: 1.8, unlocked: false, cost: 15, currency: 'stars', costText: '15 ⭐', explosive: true },
+      { id: 'cosmic', name: 'Cosmic Crystal', color: '#e056fd', mult: 3.0, unlocked: false, cost: 2, currency: 'gems', costText: '2 💎' }
+    ];
+
+    // --- UPGRADE DEFINITIONS ---
+    const cashUpgrades = [
+      {
+        id: 'pegValue', name: 'Bouncy Peg Cash', desc: 'Peg hits award direct bonus cash',
+        level: 0, cost: 40, costMult: 1.65, onBuy: (u) => { state.pegCash += 1.5 * u.level; }
+      },
+      {
+        id: 'slotBoost', name: 'Slot Magnifier', desc: 'Increases all bucket payouts (+15%)',
+        level: 0, cost: 80, costMult: 1.8, onBuy: (u) => { state.slotBoost = 1 + (u.level * 0.15); }
+      },
+      {
+        id: 'multiDrop', name: 'Multi-Ball Splitter', desc: 'Drops extra balls per click (+1 Ball)',
+        level: 0, maxLevel: 5, cost: 250, costMult: 3.5, onBuy: (u) => { state.ballsPerDrop = 1 + u.level; }
+      },
+      {
+        id: 'passiveGen', name: 'Piggy Vault', desc: 'Generates passive cash per second',
+        level: 0, cost: 150, costMult: 1.75, onBuy: (u) => { state.passiveGen = u.level * 8; }
+      },
+      {
+        id: 'autoDrop', name: 'Auto-Dropper', desc: 'Spawns balls automatically',
+        level: 0, maxLevel: 6, cost: 350, costMult: 2.5,
+        onBuy: (u) => {
+          state.autoDropSpeedMs = Math.max(120, 1000 - (u.level * 140));
+          if (state.autoDropInterval) clearInterval(state.autoDropInterval);
+          state.autoDropInterval = setInterval(() => {
+            if (state.balance >= state.ballValue) spawnBalls();
+          }, state.autoDropSpeedMs);
+        }
+      },
+      {
+        id: 'addRows', name: 'Board Expansion', desc: 'Adds peg row for bigger edge multipliers',
+        level: 0, maxLevel: 4, cost: 1000, costMult: 4.5,
+        onBuy: () => { state.rows += 1; initBoard(); }
+      }
+    ];
+
+    const starUpgrades = [
+      {
+        id: 'starMult', name: 'Cosmic Cash Multiplier', desc: '+100% Cash boost per level',
+        level: 0, cost: 1, costMult: 2.0, currency: 'stars', onBuy: (u) => { state.starIncomeMult = 1 + u.level; }
+      },
+      {
+        id: 'starStart', name: 'Head Start Vault', desc: 'Increases starting cash on resets',
+        level: 0, cost: 2, costMult: 2.5, currency: 'stars', onBuy: (u) => { state.starStartCash = 250 + (u.level * 2500); }
+      }
+    ];
+
+    const skillTreeNodes = [
+      {
+        id: 'gravity', name: 'Hyper Gravity', desc: 'Balls fall 35% faster through board',
+        cost: 1, req: null
+      },
+      {
+        id: 'critBounce', name: 'Critical Bounces', desc: 'Peg hits have 12% chance for 5x Cash',
+        cost: 2, req: 'gravity'
+      },
+      {
+        id: 'ballSplitter', name: 'Chain Reactions', desc: '10% Chance for ball to split on peg hit',
+        cost: 3, req: 'critBounce'
+      },
+      {
+        id: 'gemBooster', name: 'Gem Overdrive', desc: 'Double all Star & Rebirth gains forever',
+        cost: 5, req: 'ballSplitter'
+      }
+    ];
+
+    // --- CANVAS & PHYSICS ENGINE ---
+    let canvas, ctx;
+    let pegs = [];
+    let balls = [];
+    let floatingTexts = [];
+    let particles = [];
+    let slots = [];
+
+    function initBoard() {
+      pegs = [];
+      slots = [];
+      
+      const startY = 45;
+      const rowSpacing = (canvas.height - 100) / (state.rows + 1);
+      
+      for (let r = 0; r < state.rows; r++) {
+        const count = r + 3;
+        const spacing = canvas.width / (count + 1);
+        for (let c = 0; c < count; c++) {
+          pegs.push({
+            x: spacing * (c + 1),
+            y: startY + r * rowSpacing,
+            radius: 5,
+            hitGlow: 0
+          });
+        }
+      }
+
+      const totalSlots = state.rows + 2;
+      const slotWidth = canvas.width / totalSlots;
+      
+      for (let i = 0; i < totalSlots; i++) {
+        let centerDist = Math.abs(i - (totalSlots - 1) / 2);
+        let baseMult = Math.pow(2.1, centerDist) * 0.25;
+        if (centerDist === 0) baseMult = 0.3;
+
+        slots.push({
+          x: i * slotWidth,
+          y: canvas.height - 35,
+          w: slotWidth,
+          h: 28,
+          baseMult: parseFloat(baseMult.toFixed(2))
         });
-
-        this.volcanoTile = this.add.image(640, 60, 'hazard-volcano').setInteractive();
-        this.volcanoTile.on('pointerdown', () => this.triggerVolcanoHazard());
+      }
     }
 
-    setupGroups() {
-        this.towers = this.add.group({ runChildUpdate: false });
-        this.enemies = this.add.group({ runChildUpdate: false });
-        this.projectiles = this.add.group({ runChildUpdate: false });
+    function spawnBalls() {
+      if (state.balance < state.ballValue) return;
+
+      const equipped = ballSkins.find(s => s.id === state.equippedBall) || ballSkins[0];
+
+      for (let i = 0; i < state.ballsPerDrop; i++) {
+        if (state.balance >= state.ballValue) {
+          state.balance -= state.ballValue;
+          const offset = (Math.random() * 20 - 10);
+          balls.push({
+            x: (canvas.width / 2) + offset,
+            y: 18 + (i * -12),
+            vx: (Math.random() - 0.5) * 1.5,
+            vy: Math.random() * 0.5,
+            radius: 6,
+            value: state.ballValue,
+            skin: equipped
+          });
+        }
+      }
+      updateStatsUI();
     }
 
-    setupInputs() {
-        this.input.on('pointerdown', (pointer) => {
-            audio.init();
-            if (pointer.y < 50 || pointer.y > 650) return;
+    function addParticles(x, y, color, count = 6) {
+      for (let i = 0; i < count; i++) {
+        particles.push({
+          x: x, y: y,
+          vx: (Math.random() - 0.5) * 5,
+          vy: (Math.random() - 0.5) * 5,
+          radius: Math.random() * 3 + 2,
+          life: 1.0,
+          color: color
+        });
+      }
+    }
 
-            const x = Math.floor(pointer.x / 40) * 40 + 20;
-            const y = Math.floor(pointer.y / 40) * 40 + 20;
+    function updatePhysics() {
+      const gravity = 0.22 * (state.skills.gravity ? 1.35 : 1.0);
+      const bounce = 0.58;
 
-            let clickedTower = null;
-            this.towers.getChildren().forEach(t => {
-                if (t.active && Phaser.Math.Distance.Between(t.x, t.y, pointer.x, pointer.y) < 25) clickedTower = t;
+      for (let b = balls.length - 1; b >= 0; b--) {
+        let ball = balls[b];
+        ball.vy += gravity;
+        ball.x += ball.vx;
+        ball.y += ball.vy;
+
+        // Peg Collision
+        for (let peg of pegs) {
+          let dx = ball.x - peg.x;
+          let dy = ball.y - peg.y;
+          let dist = Math.hypot(dx, dy);
+          let minDist = ball.radius + peg.radius;
+
+          if (dist < minDist) {
+            peg.hitGlow = 1.0;
+            playSound(300 + Math.random() * 200, 0.04);
+
+            let hitMult = 1.0;
+            if (state.skills.critBounce && Math.random() < 0.12) {
+              hitMult = 5.0;
+              addParticles(peg.x, peg.y, '#ffcc00', 8);
+              playSound(600, 0.08, 'square');
+            }
+
+            if (state.pegCash > 0) {
+              let hitEarn = state.pegCash * (ball.value / 10) * state.starIncomeMult * hitMult;
+              state.balance += hitEarn;
+              floatingTexts.push({
+                text: `+${formatCash(hitEarn)}`,
+                x: peg.x, y: peg.y - 6, alpha: 0.9,
+                color: hitMult > 1 ? '#ffcc00' : '#2ed573'
+              });
+            }
+
+            // Skill: Ball Splitter Chance
+            if (state.skills.ballSplitter && Math.random() < 0.10 && balls.length < 40) {
+              balls.push({
+                x: ball.x + 4, y: ball.y,
+                vx: -ball.vx, vy: ball.vy,
+                radius: 4.5, value: ball.value * 0.5,
+                skin: ball.skin
+              });
+            }
+
+            let nx = dx / dist;
+            let ny = dy / dist;
+            ball.x = peg.x + nx * minDist;
+            ball.y = peg.y + ny * minDist;
+
+            let dot = ball.vx * nx + ball.vy * ny;
+            ball.vx = (ball.vx - 2 * dot * nx) * bounce + (Math.random() - 0.5) * 0.8;
+            ball.vy = (ball.vy - 2 * dot * ny) * bounce;
+          }
+        }
+
+        // Walls
+        if (ball.x - ball.radius < 0) { ball.x = ball.radius; ball.vx *= -0.6; }
+        else if (ball.x + ball.radius > canvas.width) { ball.x = canvas.width - ball.radius; ball.vx *= -0.6; }
+
+        // Slot Landing
+        if (ball.y > canvas.height - 45) {
+          let slot = slots.find(s => ball.x >= s.x && ball.x < s.x + s.w);
+          if (slot) {
+            let skinMult = ball.skin ? ball.skin.mult : 1.0;
+            let finalMult = slot.baseMult * state.slotBoost * skinMult;
+            let winAmount = ball.value * finalMult * state.starIncomeMult;
+            state.balance += winAmount;
+            
+            floatingTexts.push({
+              text: `+${formatCash(winAmount)}`,
+              x: ball.x, y: canvas.height - 45, alpha: 1.0,
+              color: finalMult >= 2.5 ? '#e056fd' : '#ffcc00'
             });
 
-            if (clickedTower) {
-                this.openContextWindow(clickedTower);
-                return;
+            if (ball.skin && ball.skin.explosive) {
+              addParticles(ball.x, canvas.height - 35, '#ffcc00', 16);
+              playSound(120, 0.2, 'sawtooth');
+            } else {
+              addParticles(ball.x, canvas.height - 35, ball.skin ? ball.skin.color : '#00d2ff', 6);
+              playSound(160 + finalMult * 30, 0.1, 'triangle');
             }
-
-            this.closeContextWindow();
-
-            const spec = TOWER_SPECS[this.selectedTowerType];
-            const cost = storage.isUnlocked('eco_4') ? Math.floor(spec.cost * 0.9) : spec.cost;
-
-            if (this.gold >= cost) {
-                const isHigh = this.highGroundNodes.some(n => Math.hypot(n.x - x, n.y - y) < 30);
-                this.gold -= cost;
-                const tower = new Tower(this, x, y, this.selectedTowerType, isHigh);
-                this.towers.add(tower);
-                audio.playZap((x - 640) / 640);
-                this.updateHUD();
-            }
-        });
-    }
-
-    setupParticles() {
-        this.emitter = this.add.particles(0, 0, 'particle-bolt', {
-            speed: { min: 50, max: 150 },
-            scale: { start: 1, end: 0 },
-            lifespan: 300,
-            blendMode: 'ADD',
-            emitting: false
-        });
-    }
-
-    setupUI() {
-        document.querySelectorAll('.build-btn').forEach(btn => {
-            btn.onclick = (e) => {
-                document.querySelectorAll('.build-btn').forEach(b => b.classList.remove('active'));
-                const target = e.currentTarget;
-                target.classList.add('active');
-                this.selectedTowerType = target.getAttribute('data-type');
-            };
-        });
-
-        document.getElementById('btn-talents').onclick = () => {
-            document.getElementById('talent-modal').style.display = 'block';
-            this.renderTalentTree();
-        };
-        document.getElementById('btn-close-talents').onclick = () => {
-            document.getElementById('talent-modal').style.display = 'none';
-        };
-        document.getElementById('btn-start-wave').onclick = () => this.startNextWave();
-        document.getElementById('btn-up-a').onclick = () => this.upgradeSelected('A');
-        document.getElementById('btn-up-b').onclick = () => this.upgradeSelected('B');
-        document.getElementById('btn-sell').onclick = () => this.sellSelected();
-
-        this.updateHUD();
-    }
-
-    triggerVolcanoHazard() {
-        if (this.volcanoCooldown > 0) return;
-        this.volcanoCooldown = 15.0;
-        audio.playErupt();
-        this.cameras.main.shake(500, 0.01);
-
-        this.enemies.getChildren().forEach(e => {
-            if (e.active && !e.flying) {
-                e.applyDamage(300, 'burned', 1.0);
-                if (e.active) this.emitter.explode(20, e.x, e.y);
-            }
-        });
-    }
-
-    startNextWave() {
-        if (this.waveActive) return;
-        this.waveActive = true;
-        this.spawnQueue = [];
-
-        const count = 10 + this.wave * 4;
-        const hpMult = 1 + (this.wave - 1) * 0.35;
-
-        if (this.wave % 5 === 0 && storage.isUnlocked('eco_5')) {
-            this.gold += 250;
-            this.updateHUD();
+          }
+          balls.splice(b, 1);
+          updateStatsUI();
         }
+      }
 
-        for (let i = 0; i < count; i++) {
-            let type = 'satyr';
-            if (this.wave >= 2 && i % 3 === 0) type = 'harpy';
-            if (this.wave >= 3 && i % 4 === 0) type = 'cyclops';
-            this.spawnQueue.push({ type, hpMult, delay: i * 800 });
-        }
+      // Update Particles
+      for (let i = particles.length - 1; i >= 0; i--) {
+        let p = particles[i];
+        p.x += p.vx; p.y += p.vy; p.life -= 0.04;
+        if (p.life <= 0) particles.splice(i, 1);
+      }
 
-        if (this.wave % 5 === 0) {
-            this.spawnQueue.push({ type: 'typhon', hpMult: hpMult * 1.8, delay: count * 800 + 1000 });
-        }
+      // Floating text
+      for (let i = floatingTexts.length - 1; i >= 0; i--) {
+        let ft = floatingTexts[i];
+        ft.y -= 0.8; ft.alpha -= 0.025;
+        if (ft.alpha <= 0) floatingTexts.splice(i, 1);
+      }
+
+      pegs.forEach(p => p.hitGlow = Math.max(0, p.hitGlow - 0.06));
     }
 
-    openContextWindow(tower) {
-        this.selectedTowerInstance = tower;
-        const ctxWin = document.getElementById('tower-context');
-        ctxWin.style.display = 'block';
-        ctxWin.style.left = `${Math.min(960, tower.x + 20)}px`;
-        ctxWin.style.top = `${Math.min(480, tower.y - 20)}px`;
+    function drawRoundedBox(x, y, w, h, radius) {
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.lineTo(x + w - radius, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + radius);
+      ctx.lineTo(x + w, y + h - radius);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - radius, y + h);
+      ctx.lineTo(x + radius, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - radius);
+      ctx.lineTo(x, y + radius);
+      ctx.quadraticCurveTo(x, y, x + radius, y);
+      ctx.closePath();
+    }
 
-        document.getElementById('ctx-name').innerText = `${tower.spec.name} ${tower.branch ? '[' + tower.branch + ']' : ''}`;
-        document.getElementById('ctx-stats').innerHTML = `
-            <b>Damage Dealt:</b> ${Math.round(tower.totalDamage)}<br>
-            <b>Enemies Slain:</b> ${tower.kills}<br>
-            <b>Combos Triggered:</b> ${tower.synergiesTriggered}<br>
-            <b>Base Range/Dmg:</b> ${Math.round(tower.range)} / ${Math.round(tower.damage)}
+    function render() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Render Slots
+      slots.forEach(s => {
+        let currentMult = (s.baseMult * state.slotBoost).toFixed(1);
+        ctx.fillStyle = s.baseMult >= 3 ? 'rgba(224, 86, 253, 0.25)' : 'rgba(0, 210, 255, 0.15)';
+        ctx.strokeStyle = s.baseMult >= 3 ? '#e056fd' : '#00d2ff';
+        ctx.lineWidth = 2;
+        
+        drawRoundedBox(s.x + 2, s.y, s.w - 4, s.h, 6);
+        ctx.fill(); ctx.stroke();
+
+        ctx.fillStyle = s.baseMult >= 3 ? '#e056fd' : '#ffffff';
+        ctx.font = '900 11px system-ui, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(`${currentMult}x`, s.x + s.w / 2, s.y + 18);
+      });
+
+      // Render Pegs
+      pegs.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius + p.hitGlow * 2, 0, Math.PI * 2);
+        ctx.fillStyle = p.hitGlow > 0 ? '#ff3366' : '#ffffff';
+        ctx.fill();
+      });
+
+      // Render Balls
+      balls.forEach(b => {
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
+        ctx.fillStyle = b.skin ? b.skin.color : '#00d2ff';
+        ctx.shadowBlur = 6;
+        ctx.shadowColor = b.skin ? b.skin.color : '#00d2ff';
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      });
+
+      // Render Particles
+      particles.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = Math.max(0, p.life);
+        ctx.fill();
+        ctx.globalAlpha = 1.0;
+      });
+
+      // Render Floating Text
+      floatingTexts.forEach(ft => {
+        ctx.fillStyle = ft.color || '#ffcc00';
+        ctx.font = '900 12px system-ui, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.globalAlpha = Math.max(0, ft.alpha);
+        ctx.fillText(ft.text, ft.x, ft.y);
+        ctx.globalAlpha = 1.0;
+      });
+    }
+
+    // Passive Loop
+    setInterval(() => {
+      if (state.passiveGen > 0) {
+        state.balance += state.passiveGen * state.starIncomeMult;
+        updateStatsUI();
+      }
+    }, 1000);
+
+    // --- REBIRTH & PRESTIGE LOGIC ---
+    function getPendingStars() {
+      if (state.balance < 1000000) return 0;
+      let mult = state.skills.gemBooster ? 2 : 1;
+      return Math.floor(Math.pow(state.balance / 1000000, 0.5)) * mult;
+    }
+
+    function getPendingGems() {
+      if (state.stars < 50 && state.balance < 1000000000) return 0;
+      let fromStars = Math.floor(state.stars / 50);
+      let fromCash = Math.floor(Math.pow(state.balance / 1000000000, 0.4));
+      let mult = state.skills.gemBooster ? 2 : 1;
+      return Math.max(1, fromStars + fromCash) * mult;
+    }
+
+    function doRebirth() {
+      let earned = getPendingStars();
+      if (earned <= 0) return;
+
+      state.stars += earned;
+      state.balance = state.starStartCash;
+      state.rows = 8;
+      state.pegCash = 0;
+      state.slotBoost = 1.0;
+      state.ballsPerDrop = 1;
+      state.passiveGen = 0;
+      state.autoDropSpeedMs = 1000;
+      if (state.autoDropInterval) clearInterval(state.autoDropInterval);
+
+      cashUpgrades.forEach(u => { u.level = 0; u.cost = Math.round(u.costMult * 20); });
+
+      initBoard();
+      updateStatsUI();
+      playSound(500, 0.3, 'square');
+    }
+
+    function doPrestige() {
+      let earnedGems = getPendingGems();
+      if (earnedGems <= 0) return;
+
+      state.gems += earnedGems;
+      state.stars = 0;
+      state.balance = 250;
+      state.rows = 8;
+      state.pegCash = 0;
+      state.slotBoost = 1.0;
+      state.ballsPerDrop = 1;
+      state.passiveGen = 0;
+      state.starIncomeMult = 1.0;
+      state.starStartCash = 250;
+      if (state.autoDropInterval) clearInterval(state.autoDropInterval);
+
+      cashUpgrades.forEach(u => { u.level = 0; u.cost = Math.round(u.costMult * 20); });
+      starUpgrades.forEach(u => { u.level = 0; u.cost = Math.round(u.costMult * 1); });
+
+      initBoard();
+      updateStatsUI();
+      playSound(800, 0.5, 'triangle');
+    }
+
+    // --- UI BUILD & UPDATE ---
+    function buildUpgradeList(containerId, upgradeArray) {
+      const listContainer = document.getElementById(containerId);
+      if (!listContainer) return;
+      listContainer.innerHTML = '';
+
+      upgradeArray.forEach(u => {
+        const item = document.createElement('div');
+        item.className = 'upgrade-item';
+
+        item.innerHTML = `
+          <div class="upgrade-info">
+            <span class="upgrade-name" id="uname-${u.id}">${u.name} (Lvl ${u.level})</span>
+            <span class="upgrade-desc">${u.desc}</span>
+          </div>
+          <button class="upgrade-btn" id="ubtn-${u.id}">
+            ${u.currency === 'stars' ? Math.round(u.cost) + ' ⭐' : formatCash(u.cost)}
+          </button>
         `;
+        listContainer.appendChild(item);
 
-        const btnA = document.getElementById('btn-up-a');
-        const btnB = document.getElementById('btn-up-b');
-
-        if (tower.branch) {
-            btnA.disabled = true; btnB.disabled = true;
-            document.getElementById('title-up-a').innerText = 'Specialization Active';
-            document.getElementById('desc-up-a').innerText = tower.branch;
-            document.getElementById('title-up-b').innerText = 'Max Level Reached';
-            document.getElementById('desc-up-b').innerText = '';
-        } else {
-            btnA.disabled = this.gold < tower.spec.branchA.cost;
-            btnB.disabled = this.gold < tower.spec.branchB.cost;
-            document.getElementById('title-up-a').innerText = `${tower.spec.branchA.name} (${tower.spec.branchA.cost}G)`;
-            document.getElementById('desc-up-a').innerText = tower.spec.branchA.desc;
-            document.getElementById('title-up-b').innerText = `${tower.spec.branchB.name} (${tower.spec.branchB.cost}G)`;
-            document.getElementById('desc-up-b').innerText = tower.spec.branchB.desc;
-        }
-    }
-
-    closeContextWindow() {
-        document.getElementById('tower-context').style.display = 'none';
-        this.selectedTowerInstance = null;
-    }
-
-    upgradeSelected(branchType) {
-        const t = this.selectedTowerInstance;
-        if (!t || !t.active || t.branch) return;
-        const bData = branchType === 'A' ? t.spec.branchA : t.spec.branchB;
-        if (this.gold >= bData.cost) {
-            this.gold -= bData.cost;
-            t.branch = bData.name;
-            t.damage *= 1.8;
-            t.range *= 1.25;
-            this.closeContextWindow();
-            this.updateHUD();
-        }
-    }
-
-    sellSelected() {
-        const t = this.selectedTowerInstance;
-        if (!t || !t.active) return;
-        this.gold += Math.floor(t.spec.cost * 0.6);
-        t.destroy();
-        this.closeContextWindow();
-        this.updateHUD();
-    }
-
-    renderTalentTree() {
-        document.getElementById('talent-points').innerText = storage.data.points;
-        ['col-offense', 'col-defense', 'col-economy'].forEach(colId => {
-            const container = document.getElementById(colId);
-            container.innerHTML = `<div class="column-title">${colId.replace('col-', '').toUpperCase()}</div>`;
-            TALENT_NODES.filter(n => n.col === colId).forEach(node => {
-                const unlocked = storage.isUnlocked(node.id);
-                const div = document.createElement('div');
-                div.className = `talent-node ${unlocked ? 'unlocked' : ''}`;
-                div.innerHTML = `<div class="talent-name">${node.name} (${node.cost} Essence)</div><div class="talent-desc">${node.desc}</div>`;
-                div.onclick = () => {
-                    if (storage.unlock(node.id)) this.renderTalentTree();
-                };
-                container.appendChild(div);
-            });
+        document.getElementById(`ubtn-${u.id}`).addEventListener('click', () => {
+          buyUpgrade(u);
         });
+      });
     }
 
-    updateHUD() {
-        document.getElementById('hud-hp').innerText = this.hp;
-        document.getElementById('hud-gold').innerText = Math.floor(this.gold);
-        document.getElementById('hud-favor').innerText = Math.floor(this.favor);
-        document.getElementById('hud-wave').innerText = this.wave;
-    }
+    function buildBallSkins() {
+      const listContainer = document.getElementById('panelBalls');
+      if (!listContainer) return;
+      listContainer.innerHTML = '';
 
-    update(time, delta) {
-        const dt = delta / 1000;
-        if (this.volcanoCooldown > 0) this.volcanoCooldown -= dt;
+      ballSkins.forEach(b => {
+        const item = document.createElement('div');
+        item.className = 'upgrade-item';
+        item.innerHTML = `
+          <div class="upgrade-info">
+            <span class="upgrade-name" style="color: ${b.color}">${b.name} (${b.mult}x Mult)</span>
+            <span class="upgrade-desc">${b.explosive ? 'Explodes on landing!' : 'Custom trail effect'}</span>
+          </div>
+          <button class="upgrade-btn" id="ballbtn-${b.id}">
+            ${b.unlocked ? (state.equippedBall === b.id ? 'Equipped' : 'Equip') : b.costText}
+          </button>
+        `;
+        listContainer.appendChild(item);
 
-        if (this.waveActive && this.spawnQueue.length > 0) {
-            for (let i = this.spawnQueue.length - 1; i >= 0; i--) {
-                const sq = this.spawnQueue[i];
-                sq.delay -= delta;
-                if (sq.delay <= 0) {
-                    const path = sq.type === 'harpy' ? this.pathFlying : (i % 2 === 0 ? this.pathGround1 : this.pathGround2);
-                    const enemy = new Enemy(this, path, sq.type, sq.hpMult);
-                    this.enemies.add(enemy);
-                    this.spawnQueue.splice(i, 1);
-                }
+        document.getElementById(`ballbtn-${b.id}`).addEventListener('click', () => {
+          if (b.unlocked) {
+            state.equippedBall = b.id;
+          } else {
+            let res = b.currency === 'stars' ? state.stars : state.gems;
+            if (res >= b.cost) {
+              if (b.currency === 'stars') state.stars -= b.cost;
+              else state.gems -= b.cost;
+              b.unlocked = true;
+              state.equippedBall = b.id;
             }
-        }
-
-        if (this.waveActive && this.spawnQueue.length === 0 && this.enemies.countActive() === 0) {
-            this.waveActive = false;
-            this.wave++;
-            if (storage.isUnlocked('def_5')) this.hp = Math.min(30, this.hp + 1);
-            this.gold += 100 + this.wave * 15;
-            this.updateHUD();
-        }
-
-        this.towers.getChildren().forEach(t => { if (t.active) t.update(time, dt); });
-        this.enemies.getChildren().forEach(e => { if (e.active) e.update(time, dt); });
-        this.projectiles.getChildren().forEach(p => { if (p.active) p.update(time, dt); });
-    }
-}
-
-class Tower extends Phaser.GameObjects.Container {
-    constructor(scene, x, y, typeKey, isHighGround) {
-        super(scene, x, y);
-        this.scene = scene;
-        this.typeKey = typeKey;
-        this.spec = TOWER_SPECS[typeKey];
-        this.isHighGround = isHighGround;
-
-        this.damage = this.spec.damage * (isHighGround ? 1.25 : 1.0) * (storage.isUnlocked('off_1') ? 1.1 : 1.0);
-        this.range = this.spec.range * (isHighGround ? 1.25 : 1.0);
-        this.rate = this.spec.rate * (storage.isUnlocked('off_2') ? 0.85 : 1.0);
-        this.cooldown = 0;
-        this.disabledTimer = 0;
-        this.branch = null;
-
-        this.totalDamage = 0;
-        this.kills = 0;
-        this.synergiesTriggered = 0;
-
-        this.baseSprite = scene.add.image(0, 0, 'tower-base');
-        this.add(this.baseSprite);
-
-        this.headGfx = scene.add.graphics();
-        this.headGfx.fillStyle(this.spec.color, 1);
-        this.headGfx.fillTriangle(12, 0, -10, -8, -10, 8);
-        this.add(this.headGfx);
-
-        scene.add.existing(this);
-    }
-
-    update(time, dt) {
-        if (!this.active) return;
-
-        if (this.disabledTimer > 0) {
-            this.disabledTimer -= dt;
-            this.alpha = 0.4;
-            return;
-        }
-        this.alpha = 1.0;
-
-        if (this.spec.range === 0) return; // Barricade non-firing tower
-
-        if (this.cooldown > 0) this.cooldown -= dt;
-
-        let target = null;
-        let maxDist = -1;
-
-        this.scene.enemies.getChildren().forEach(e => {
-            if (e.active) {
-                const dist = Phaser.Math.Distance.Between(this.x, this.y, e.x, e.y);
-                if (dist <= this.range && e.pathProgress > maxDist) {
-                    maxDist = e.pathProgress;
-                    target = e;
-                }
-            }
+          }
+          buildBallSkins();
+          updateStatsUI();
         });
+      });
+    }
 
-        if (target) {
-            const bulletSpeed = 650;
-            const dist = Phaser.Math.Distance.Between(this.x, this.y, target.x, target.y);
-            const timeToTarget = dist / bulletSpeed;
-            const predictedX = target.x + target.vx * timeToTarget;
-            const predictedY = target.y + target.vy * timeToTarget;
+    function buildSkillTree() {
+      const listContainer = document.getElementById('skillTreeList');
+      if (!listContainer) return;
+      listContainer.innerHTML = '';
 
-            const angle = Phaser.Math.Angle.Between(this.x, this.y, predictedX, predictedY);
-            this.headGfx.rotation = Phaser.Math.Angle.RotateTo(this.headGfx.rotation, angle, 0.1);
+      skillTreeNodes.forEach(node => {
+        const isUnlocked = state.skills[node.id];
+        const card = document.createElement('div');
+        card.className = `skill-card ${isUnlocked ? 'unlocked' : ''}`;
 
-            if (this.cooldown <= 0) {
-                this.fire(target);
-                this.cooldown = this.rate;
+        card.innerHTML = `
+          <div style="font-weight: 800; font-size: 0.85rem;">${node.name}</div>
+          <div style="font-size: 0.7rem; color: var(--text-sub);">${node.desc}</div>
+          <button class="upgrade-btn" id="skillbtn-${node.id}" style="margin-top: 4px; background: var(--accent-gem); border-bottom-color: #8e1da3;">
+            ${isUnlocked ? 'UNLOCKED' : node.cost + ' 💎'}
+          </button>
+        `;
+        listContainer.appendChild(card);
+
+        document.getElementById(`skillbtn-${node.id}`).addEventListener('click', () => {
+          if (!isUnlocked && state.gems >= node.cost) {
+            if (!node.req || state.skills[node.req]) {
+              state.gems -= node.cost;
+              state.skills[node.id] = true;
+              buildSkillTree();
+              updateStatsUI();
             }
-        }
+          }
+        });
+      });
     }
 
-    fire(target) {
-        const proj = new Projectile(this.scene, this.x, this.y, target, this);
-        this.scene.projectiles.add(proj);
-        audio.playZap((this.x - 640) / 640);
-    }
-}
+    function updateStatsUI() {
+      document.getElementById('balance').textContent = formatCash(state.balance);
+      document.getElementById('starsStat').textContent = `${formatVal(state.stars)} ⭐`;
+      document.getElementById('gemsStat').textContent = `${formatVal(state.gems)} 💎`;
+      document.getElementById('passiveStat').textContent = `${formatCash(state.passiveGen * state.starIncomeMult)}/s`;
+      document.getElementById('dropCost').textContent = formatVal(state.ballValue);
+      document.getElementById('dropBtn').disabled = state.balance < state.ballValue;
 
-class Enemy extends Phaser.GameObjects.Container {
-    constructor(scene, path, typeKey, hpMult) {
-        const startPoint = path.getStartPoint();
-        super(scene, startPoint.x, startPoint.y);
-        this.scene = scene;
-        this.path = path;
-        this.typeKey = typeKey;
-        this.pathProgress = 0;
+      const equipped = ballSkins.find(s => s.id === state.equippedBall);
+      if (equipped) document.getElementById('equippedBallName').textContent = `Equipped: ${equipped.name}`;
 
-        this.flying = typeKey === 'harpy';
-        this.boss = typeKey === 'typhon';
-
-        const baseHp = typeKey === 'satyr' ? 90 : (typeKey === 'harpy' ? 70 : (typeKey === 'cyclops' ? 450 : 3000));
-        this.maxHp = baseHp * hpMult;
-        this.hp = this.maxHp;
-        this.speed = typeKey === 'harpy' ? 140 : (typeKey === 'satyr' ? 110 : (typeKey === 'cyclops' ? 60 : 40));
-
-        this.shieldHp = typeKey === 'cyclops' ? 300 : (this.boss ? 1500 : 0);
-        this.bossPhase = 1;
-        this.summonTimer = 0;
-
-        this.statuses = { wet: 0, shocked: 0, burned: 0, frozen: 0, cursed: 0, stun: 0 };
-        this.vx = 0; this.vy = 0;
-
-        this.sprite = scene.add.image(0, 0, `enemy-${typeKey}`);
-        this.add(this.sprite);
-
-        this.hpBar = scene.add.graphics();
-        this.add(this.hpBar);
-
-        scene.add.existing(this);
-    }
-
-    update(time, dt) {
-        if (!this.active) return;
-
-        if (this.statuses.stun > 0) {
-            this.statuses.stun -= dt;
-            return;
+      // Update Cash Upgrades UI
+      cashUpgrades.forEach(u => {
+        const isMax = u.maxLevel && u.level >= u.maxLevel;
+        const btn = document.getElementById(`ubtn-${u.id}`);
+        const nameLabel = document.getElementById(`uname-${u.id}`);
+        if (nameLabel) nameLabel.textContent = `${u.name} (${isMax ? 'MAX' : 'Lvl ' + u.level})`;
+        if (btn) {
+          btn.disabled = (state.balance < u.cost) || isMax;
+          btn.textContent = isMax ? 'MAX' : formatCash(u.cost);
         }
+      });
 
-        let currentSpeed = this.speed;
-        if (this.typeKey === 'satyr') {
-            let nearby = 0;
-            this.scene.enemies.getChildren().forEach(other => {
-                if (other.active && other !== this && Phaser.Math.Distance.Between(this.x, this.y, other.x, other.y) < 60) nearby++;
-            });
-            if (nearby >= 2) currentSpeed *= 1.4;
+      // Update Star Upgrades UI
+      starUpgrades.forEach(u => {
+        const isMax = u.maxLevel && u.level >= u.maxLevel;
+        const btn = document.getElementById(`ubtn-${u.id}`);
+        const nameLabel = document.getElementById(`uname-${u.id}`);
+        if (nameLabel) nameLabel.textContent = `${u.name} (${isMax ? 'MAX' : 'Lvl ' + u.level})`;
+        if (btn) {
+          btn.disabled = (state.stars < u.cost) || isMax;
+          btn.textContent = isMax ? 'MAX' : `${Math.round(u.cost)} ⭐`;
         }
+      });
 
-        if (this.statuses.frozen > 0) currentSpeed *= 0.4;
-
-        const prevX = this.x; const prevY = this.y;
-        this.pathProgress += (currentSpeed / this.path.getLength()) * dt;
-
-        if (this.pathProgress >= 1.0) {
-            this.scene.hp -= this.boss ? 5 : 1;
-            if (storage.isUnlocked('def_4')) this.applyDamage(100, 'none', 1.0);
-            this.scene.updateHUD();
-            this.destroy();
-            return;
-        }
-
-        const point = this.path.getPoint(this.pathProgress);
-        this.x = point.x; this.y = point.y;
-        this.vx = (this.x - prevX) / dt; this.vy = (this.y - prevY) / dt;
-
-        // Typhon 3-Phase Fight Mechanics
-        if (this.boss) {
-            if (this.hp < this.maxHp * 0.66 && this.bossPhase === 1) {
-                this.bossPhase = 2;
-                // Phase 2: EMP Pulse disables tower
-                const towers = this.scene.towers.getChildren();
-                if (towers.length > 0 && towers[0].active) towers[0].disabledTimer = 3.0;
-            } else if (this.hp < this.maxHp * 0.33 && this.bossPhase === 2) {
-                this.bossPhase = 3;
-                this.speed *= 1.6; // Phase 3: Enraged sprint
-            }
-
-            if (this.bossPhase === 3) {
-                this.summonTimer -= dt;
-                if (this.summonTimer <= 0) {
-                    this.summonTimer = 5.0; // Phase 3: Summon minions every 5s
-                    const minion = new Enemy(this.scene, this.path, 'satyr', 1.0);
-                    minion.pathProgress = this.pathProgress;
-                    this.scene.enemies.add(minion);
-                }
-            }
-        }
-
-        if (this.statuses.burned > 0) {
-            this.statuses.burned -= dt;
-            this.applyDamage(20 * dt, 'burned', 1.0);
-            if (!this.active) return;
-        }
-
-        this.renderHPBar();
+      // Reset info UI
+      const pendingStars = getPendingStars();
+      const pendingGems = getPendingGems();
+      document.getElementById('pendingStars').textContent = `+${formatVal(pendingStars)} ⭐`;
+      document.getElementById('pendingGems').textContent = `+${formatVal(pendingGems)} 💎`;
+      document.getElementById('btnRebirth').disabled = pendingStars <= 0;
+      document.getElementById('btnPrestige').disabled = pendingGems <= 0;
     }
 
-    applyDamage(amount, element, critMultiplier = 1.0, sourceTower = null) {
-        if (!this.active) return;
-        let finalDamage = amount * critMultiplier;
+    function buyUpgrade(u) {
+      const isStar = u.currency === 'stars';
+      const curBalance = isStar ? state.stars : state.balance;
 
-        if (element === 'shocked' && this.statuses.wet > 0) {
-            this.statuses.stun = 1.5 + (storage.isUnlocked('off_5') ? 0.5 : 0);
-            this.statuses.wet = 0;
-            if (sourceTower) sourceTower.synergiesTriggered++;
-            audio.playCrit((this.x - 640) / 640);
-        }
-
-        if (element === 'physical' && this.statuses.frozen > 0) {
-            finalDamage *= 3.0;
-            this.statuses.frozen = 0;
-            if (sourceTower) sourceTower.synergiesTriggered++;
-            audio.playCrit((this.x - 640) / 640);
-        }
-
-        if (this.statuses.cursed > 0 && element === 'burned') {
-            finalDamage *= 1.5;
-            if (sourceTower) sourceTower.synergiesTriggered++;
-        }
-
-        if (element !== 'none' && element !== 'physical') {
-            this.statuses[element] = 3.0;
-        }
-
-        if (this.shieldHp > 0 && element === 'physical') {
-            this.shieldHp -= finalDamage * 0.2; // Shield absorbs 80%
-            if (this.shieldHp < 0) { finalDamage = -this.shieldHp; this.shieldHp = 0; }
-            else return;
-        }
-
-        this.hp -= finalDamage;
-        if (sourceTower) sourceTower.totalDamage += finalDamage;
-
-        if (this.hp <= 0) {
-            if (sourceTower) sourceTower.kills++;
-            this.scene.gold += (this.typeKey === 'typhon' ? 250 : 15) + (storage.isUnlocked('eco_2') ? 2 : 0);
-            this.scene.favor = Math.min(100, this.scene.favor + 5);
-            this.scene.updateHUD();
-
-            if (this.typeKey === 'harpy') {
-                this.scene.towers.getChildren().forEach(t => {
-                    if (t.active && Phaser.Math.Distance.Between(this.x, this.y, t.x, t.y) < 120) t.disabledTimer = 2.0;
-                });
-            }
-
-            this.destroy();
-        }
+      if (curBalance >= u.cost && (!u.maxLevel || u.level < u.maxLevel)) {
+        if (isStar) state.stars -= u.cost;
+        else state.balance -= u.cost;
+        
+        u.level += 1;
+        u.onBuy(u);
+        u.cost = Math.round(u.cost * u.costMult);
+        updateStatsUI();
+      }
     }
 
-    renderHPBar() {
-        if (!this.active || !this.hpBar) return;
-        this.hpBar.clear();
-        const w = 32; const h = 4;
-        this.hpBar.fillStyle(0x000000, 0.8);
-        this.hpBar.fillRect(-w/2, -22, w, h);
-        const pct = Math.max(0, this.hp / this.maxHp);
-        this.hpBar.fillStyle(pct > 0.5 ? 0x2ecc71 : 0xe74c3c, 1);
-        this.hpBar.fillRect(-w/2, -22, w * pct, h);
-    }
-}
-
-class Projectile extends Phaser.GameObjects.Image {
-    constructor(scene, x, y, target, ownerTower) {
-        super(scene, x, y, 'particle-bolt');
-        this.scene = scene;
-        this.target = target;
-        this.ownerTower = ownerTower;
-        this.speed = 650;
-        this.setTint(ownerTower.spec.color);
-        scene.add.existing(this);
+    // Bet controls
+    function adjustBet(factor) {
+      state.ballValue = Math.max(1, Math.round(state.ballValue * factor));
+      document.getElementById('betInput').value = formatVal(state.ballValue);
+      updateStatsUI();
     }
 
-    update(time, dt) {
-        if (!this.active) return;
-        if (!this.target || !this.target.active) {
-            this.destroy();
-            return;
-        }
-
-        const angle = Phaser.Math.Angle.Between(this.x, this.y, this.target.x, this.target.y);
-        const step = this.speed * dt;
-
-        this.x += Math.cos(angle) * step;
-        this.y += Math.sin(angle) * step;
-
-        if (Phaser.Math.Distance.Between(this.x, this.y, this.target.x, this.target.y) < 12) {
-            this.target.applyDamage(this.ownerTower.damage, this.ownerTower.spec.element, 1.0, this.ownerTower);
-            if (this.scene.emitter) this.scene.emitter.explode(8, this.x, this.y);
-            this.destroy();
-        }
+    function setBetFraction(fraction) {
+      state.ballValue = Math.max(1, Math.floor(state.balance * fraction));
+      document.getElementById('betInput').value = formatVal(state.ballValue);
+      updateStatsUI();
     }
-}
 
-const config = {
-    type: Phaser.WEBGL,
-    width: 1280,
-    height: 720,
-    parent: 'game-container',
-    backgroundColor: '#0b0e14',
-    scene: [BootScene, GameScene]
-};
+    function setupTabs() {
+      const tabs = [
+        { btn: 'tabUpgrades', panel: 'panelUpgrades' },
+        { btn: 'tabStars', panel: 'panelStars' },
+        { btn: 'tabSkillTree', panel: 'panelSkillTree' },
+        { btn: 'tabBalls', panel: 'panelBalls' },
+        { btn: 'tabResets', panel: 'panelResets' }
+      ];
 
-const game = new Phaser.Game(config);
-</script>
+      tabs.forEach(t => {
+        document.getElementById(t.btn).addEventListener('click', () => {
+          tabs.forEach(other => {
+            document.getElementById(other.btn).classList.remove('active');
+            document.getElementById(other.panel).style.display = 'none';
+          });
+          document.getElementById(t.btn).classList.add('active');
+          document.getElementById(t.panel).style.display = t.panel === 'panelSkillTree' ? 'block' : 'flex';
+        });
+      });
+    }
+
+    function gameLoop() {
+      updatePhysics();
+      render();
+      requestAnimationFrame(gameLoop);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      canvas = document.getElementById('plinko');
+      ctx = canvas.getContext('2d');
+
+      const betInput = document.getElementById('betInput');
+      betInput.addEventListener('change', () => {
+        let num = parseFloat(betInput.value);
+        if (isNaN(num) || num < 1) num = 1;
+        state.ballValue = Math.round(num);
+        betInput.value = formatVal(state.ballValue);
+        updateStatsUI();
+      });
+
+      document.getElementById('btnHalf').addEventListener('click', () => adjustBet(0.5));
+      document.getElementById('btnDouble').addEventListener('click', () => adjustBet(2));
+      document.getElementById('btnTenPct').addEventListener('click', () => setBetFraction(0.1));
+      document.getElementById('btnMax').addEventListener('click', () => setBetFraction(1.0));
+      document.getElementById('dropBtn').addEventListener('click', spawnBalls);
+      document.getElementById('btnRebirth').addEventListener('click', doRebirth);
+      document.getElementById('btnPrestige').addEventListener('click', doPrestige);
+
+      setupTabs();
+      initBoard();
+      buildUpgradeList('panelUpgrades', cashUpgrades);
+      buildUpgradeList('panelStars', starUpgrades);
+      buildSkillTree();
+      buildBallSkins();
+      updateStatsUI();
+      gameLoop();
+    });
+  </script>
 </body>
 </html>
