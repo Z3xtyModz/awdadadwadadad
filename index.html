@@ -15,6 +15,7 @@
       --accent-green: #2ed573;
       --accent-purple: #a55eea;
       --accent-gem: #e056fd;
+      --accent-darkmatter: #70a1ff;
       --text-main: #ffffff;
       --text-sub: #8e97c6;
     }
@@ -45,9 +46,9 @@
       flex-direction: row;
       gap: 16px;
       padding: 16px;
-      max-width: 1120px;
+      max-width: 1220px;
       width: 100%;
-      height: 780px;
+      height: 820px;
     }
 
     .card {
@@ -82,10 +83,10 @@
     .header-stats {
       width: 100%;
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
       background: #0f111a;
-      padding: 10px 12px;
+      padding: 8px 10px;
       border-radius: 14px;
       border: 3px solid #2d3254;
       text-align: center;
@@ -98,14 +99,14 @@
     }
 
     .stat-label {
-      font-size: 0.65rem;
+      font-size: 0.6rem;
       color: var(--text-sub);
       text-transform: uppercase;
       font-weight: 800;
     }
 
     .stat-value {
-      font-size: 1.15rem;
+      font-size: 0.95rem;
       font-weight: 900;
     }
 
@@ -196,18 +197,18 @@
     /* Tabs Bar */
     .tab-container {
       display: flex;
-      gap: 6px;
+      gap: 4px;
       border-bottom: 3px solid var(--panel-border);
       padding-bottom: 6px;
     }
 
     .tab-btn {
       flex: 1;
-      padding: 8px 4px;
+      padding: 8px 2px;
       border: none;
       border-radius: 10px;
       font-weight: 800;
-      font-size: 0.75rem;
+      font-size: 0.68rem;
       cursor: pointer;
       background: #0f111a;
       color: var(--text-sub);
@@ -266,7 +267,7 @@
       font-weight: 800;
       font-size: 0.75rem;
       cursor: pointer;
-      min-width: 85px;
+      min-width: 90px;
       text-align: center;
     }
 
@@ -277,14 +278,34 @@
       cursor: not-allowed;
     }
 
-    /* Skill Tree Styling */
-    .skill-tree-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
+    /* Branching Skill Tree Layout */
+    .skill-tree-container {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      padding: 4px;
+    }
+
+    .skill-tier-row {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      position: relative;
+    }
+
+    .skill-tier-header {
+      font-size: 0.7rem;
+      font-weight: 900;
+      color: var(--accent-cyan);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+      border-bottom: 1px solid #2d3254;
+      padding-bottom: 2px;
     }
 
     .skill-card {
+      flex: 1;
       background: #0f111a;
       border: 3px solid #2d3254;
       border-radius: 14px;
@@ -293,40 +314,67 @@
       flex-direction: column;
       gap: 6px;
       position: relative;
+      transition: all 0.2s ease;
+    }
+
+    .skill-card.available {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 8px rgba(0, 210, 255, 0.2);
     }
 
     .skill-card.unlocked {
       border-color: var(--accent-gem);
-      background: radial-gradient(circle at top left, rgba(224, 86, 253, 0.15), transparent);
+      background: radial-gradient(circle at top left, rgba(224, 86, 253, 0.2), transparent);
+    }
+
+    .skill-card.locked {
+      opacity: 0.5;
+    }
+
+    .branch-badge {
+      font-size: 0.6rem;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: #2d3254;
+      color: var(--text-sub);
+      display: inline-block;
+      width: fit-content;
+    }
+
+    .branch-badge.met {
+      background: rgba(46, 213, 115, 0.2);
+      color: var(--accent-green);
     }
 
     /* Reset / Prestige Cards */
     .reset-split-container {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
     }
 
     .reset-card {
       background: #0f111a;
       border: 3px dashed var(--panel-border);
-      border-radius: 16px;
-      padding: 14px;
+      border-radius: 14px;
+      padding: 10px;
       text-align: center;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
     }
 
     .reset-card.rebirth-card { border-color: var(--accent-purple); }
     .reset-card.prestige-card { border-color: var(--accent-gem); }
+    .reset-card.ascend-card { border-color: var(--accent-darkmatter); }
 
     .btn-reset {
       width: 100%;
-      padding: 10px;
+      padding: 8px;
       border: none;
-      border-radius: 12px;
-      font-size: 0.95rem;
+      border-radius: 10px;
+      font-size: 0.85rem;
       font-weight: 900;
       cursor: pointer;
       color: white;
@@ -342,10 +390,27 @@
       border-bottom: 4px solid #8e1da3;
     }
 
+    .btn-ascend-action {
+      background: linear-gradient(180deg, #70a1ff 0%, #1e90ff 100%);
+      border-bottom: 4px solid #0056b3;
+    }
+
     .btn-reset:disabled {
       opacity: 0.4;
       cursor: not-allowed;
       border-bottom-color: #333;
+    }
+
+    .danger-btn {
+      background: #ff3366;
+      border: none;
+      border-bottom: 4px solid #b3003b;
+      color: white;
+      padding: 10px;
+      border-radius: 10px;
+      font-weight: 900;
+      cursor: pointer;
+      width: 100%;
     }
   </style>
 </head>
@@ -381,16 +446,20 @@
           <span class="stat-value" id="balance" style="color: var(--accent-yellow);">$250</span>
         </div>
         <div class="stat-box">
-          <span class="stat-label">Stars (Rebirth)</span>
+          <span class="stat-label">Stars</span>
           <span class="stat-value" id="starsStat" style="color: var(--accent-purple);">0 ⭐</span>
         </div>
         <div class="stat-box">
-          <span class="stat-label">Gems (Prestige)</span>
+          <span class="stat-label">Gems</span>
           <span class="stat-value" id="gemsStat" style="color: var(--accent-gem);">0 💎</span>
         </div>
         <div class="stat-box">
-          <span class="stat-label">Passive</span>
-          <span class="stat-value" id="passiveStat" style="color: var(--accent-green);">$0/s</span>
+          <span class="stat-label">Dark Matter</span>
+          <span class="stat-value" id="darkMatterStat" style="color: var(--accent-darkmatter);">0 🌌</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">Combo</span>
+          <span class="stat-value" id="comboStat" style="color: var(--accent-pink);">1.0x</span>
         </div>
       </div>
 
@@ -400,6 +469,7 @@
         <button class="tab-btn" id="tabSkillTree">Skill Tree</button>
         <button class="tab-btn" id="tabBalls">Ball Skins</button>
         <button class="tab-btn" id="tabResets">Reset/Prestige</button>
+        <button class="tab-btn" id="tabSettings">Settings</button>
       </div>
 
       <div class="panel-content" id="panelUpgrades"></div>
@@ -407,7 +477,7 @@
       <div class="panel-content" id="panelStars" style="display: none;"></div>
 
       <div class="panel-content" id="panelSkillTree" style="display: none;">
-        <div class="skill-tree-grid" id="skillTreeList"></div>
+        <div class="skill-tree-container" id="skillTreeContainer"></div>
       </div>
 
       <div class="panel-content" id="panelBalls" style="display: none;"></div>
@@ -415,28 +485,53 @@
       <div class="panel-content" id="panelResets" style="display: none;">
         <div class="reset-split-container">
           <div class="reset-card rebirth-card">
-            <h3 style="color: var(--accent-purple);">Tier 1: Cosmic Rebirth</h3>
-            <p style="font-size: 0.75rem; color: var(--text-sub);">
-              Resets Cash, Board Rows & Base Upgrades. Grants <b style="color: var(--accent-purple);">Stars (⭐)</b> for meta perk unlocks.
+            <h4 style="color: var(--accent-purple);">Tier 1: Cosmic Rebirth</h4>
+            <p style="font-size: 0.65rem; color: var(--text-sub);">
+              Resets Cash, Rows & Base Upgrades. Grants <b style="color: var(--accent-purple);">Stars (⭐)</b> for meta perks.
             </p>
-            <div style="font-weight: 900; font-size: 1rem;">
+            <div style="font-weight: 900; font-size: 0.85rem;">
               Pending Earnings: <span id="pendingStars" style="color: var(--accent-yellow);">+0 ⭐</span>
             </div>
-            <div style="font-size: 0.7rem; color: var(--text-sub);">Req: $1.00M Cash</div>
             <button id="btnRebirth" class="btn-reset btn-rebirth-action" disabled>REBIRTH</button>
           </div>
 
           <div class="reset-card prestige-card">
-            <h3 style="color: var(--accent-gem);">Tier 2: Super Prestige</h3>
-            <p style="font-size: 0.75rem; color: var(--text-sub);">
-              Resets Cash, Base Upgrades, Stars AND Star Shop. Grants <b style="color: var(--accent-gem);">Prestige Gems (💎)</b> to spend on the Skill Tree!
+            <h4 style="color: var(--accent-gem);">Tier 2: Super Prestige</h4>
+            <p style="font-size: 0.65rem; color: var(--text-sub);">
+              Resets Cash, Base Upgrades & Stars. Grants <b style="color: var(--accent-gem);">Gems (💎)</b> for Skill Tree perks.
             </p>
-            <div style="font-weight: 900; font-size: 1rem;">
+            <div style="font-weight: 900; font-size: 0.85rem;">
               Pending Gems: <span id="pendingGems" style="color: var(--accent-gem);">+0 💎</span>
             </div>
-            <div style="font-size: 0.7rem; color: var(--text-sub);">Req: 50 Stars or $1.00B Cash</div>
             <button id="btnPrestige" class="btn-reset btn-prestige-action" disabled>SUPER PRESTIGE</button>
           </div>
+
+          <div class="reset-card ascend-card">
+            <h4 style="color: var(--accent-darkmatter);">Tier 3: Cosmic Ascension</h4>
+            <p style="font-size: 0.65rem; color: var(--text-sub);">
+              Resets EVERYTHING (Cash, Stars, Gems, Skill Tree). Grants <b style="color: var(--accent-darkmatter);">Dark Matter (🌌)</b> for +1000% Multiplier per point!
+            </p>
+            <div style="font-weight: 900; font-size: 0.85rem;">
+              Pending Dark Matter: <span id="pendingDarkMatter" style="color: var(--accent-darkmatter);">+0 🌌</span>
+            </div>
+            <button id="btnAscend" class="btn-reset btn-ascend-action" disabled>ASCEND TO COSMOS</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-content" id="panelSettings" style="display: none; padding: 12px; gap: 14px;">
+        <div style="background: #0f111a; padding: 12px; border-radius: 12px; border: 2px solid #2d3254;">
+          <h4 style="margin-bottom: 6px;">Game Storage</h4>
+          <p style="font-size: 0.75rem; color: var(--text-sub); margin-bottom: 10px;">Your game progress automatically saves every 5 seconds to your local browser storage.</p>
+          <div style="display: flex; gap: 10px;">
+            <button id="btnSaveNow" class="upgrade-btn" style="flex: 1;">SAVE NOW</button>
+          </div>
+        </div>
+
+        <div style="background: rgba(255, 51, 102, 0.1); padding: 12px; border-radius: 12px; border: 2px solid var(--accent-pink);">
+          <h4 style="color: var(--accent-pink); margin-bottom: 6px;">Wipe Save / Hard Reset</h4>
+          <p style="font-size: 0.75rem; color: var(--text-sub); margin-bottom: 10px;">Completely wipe ALL progress, cash, stars, gems, dark matter, and skills. Resets state to $250 without giving any bonuses or rewards.</p>
+          <button id="btnHardReset" class="danger-btn">RESET ALL PROGRESS (NO REWARDS)</button>
         </div>
       </div>
     </div>
@@ -488,6 +583,7 @@
       balance: 250,
       stars: 0,
       gems: 0,
+      darkMatter: 0,
       ballValue: 10,
       rows: 8,
       pegCash: 0,
@@ -504,21 +600,38 @@
       // Equipped Ball Skin
       equippedBall: 'cyan',
 
-      // Skill Tree Unlocks
+      // Branching Skill Tree Unlocks
       skills: {
         gravity: false,
         critBounce: false,
+        pegResonator: false,
         ballSplitter: false,
-        gemBooster: false
-      }
+        slotOverload: false,
+        comboSurge: false,
+        piggyOverdrive: false,
+        gemBooster: false,
+        darkSingularity: false,
+        cosmicMastery: false
+      },
+
+      // Lifetime & Combo Engine
+      comboCount: 0,
+      comboMult: 1.0,
+      comboTimer: null,
+      lastSaved: Date.now()
     };
 
-    // --- BALL SKINS CATALOGUE ---
+    // --- BALL SKINS CATALOGUE (EXPANDED TO 9 SKINS) ---
     const ballSkins = [
       { id: 'cyan', name: 'Standard Neon', color: '#00d2ff', mult: 1.0, unlocked: true, costText: 'Default' },
       { id: 'magma', name: 'Magma Orb', color: '#ff3366', mult: 1.35, unlocked: false, cost: 5, currency: 'stars', costText: '5 ⭐' },
       { id: 'bomb', name: 'Bomb Ball', color: '#ffcc00', mult: 1.8, unlocked: false, cost: 15, currency: 'stars', costText: '15 ⭐', explosive: true },
-      { id: 'cosmic', name: 'Cosmic Crystal', color: '#e056fd', mult: 3.0, unlocked: false, cost: 2, currency: 'gems', costText: '2 💎' }
+      { id: 'gold', name: 'Golden Sphere', color: '#ffd700', mult: 2.5, unlocked: false, cost: 35, currency: 'stars', costText: '35 ⭐' },
+      { id: 'cosmic', name: 'Cosmic Crystal', color: '#e056fd', mult: 3.5, unlocked: false, cost: 2, currency: 'gems', costText: '2 💎' },
+      { id: 'plasma', name: 'Plasma Pulse', color: '#2ed573', mult: 5.0, unlocked: false, cost: 5, currency: 'gems', costText: '5 💎' },
+      { id: 'phantom', name: 'Phantom Ghost', color: '#a55eea', mult: 7.5, unlocked: false, cost: 12, currency: 'gems', costText: '12 💎' },
+      { id: 'quantum', name: 'Quantum Core', color: '#70a1ff', mult: 12.0, unlocked: false, cost: 1, currency: 'darkMatter', costText: '1 🌌' },
+      { id: 'supernova', name: 'Supernova', color: '#ff4757', mult: 25.0, unlocked: false, cost: 3, currency: 'darkMatter', costText: '3 🌌', explosive: true }
     ];
 
     // --- UPGRADE DEFINITIONS ---
@@ -546,7 +659,7 @@
           state.autoDropSpeedMs = Math.max(120, 1000 - (u.level * 140));
           if (state.autoDropInterval) clearInterval(state.autoDropInterval);
           state.autoDropInterval = setInterval(() => {
-            if (state.balance >= state.ballValue) spawnBalls();
+            if (state.balance >= getEffectiveDropCost()) spawnBalls();
           }, state.autoDropSpeedMs);
         }
       },
@@ -568,24 +681,38 @@
       }
     ];
 
+    // --- BRANCHING SKILL TREE DEFINITION ---
     const skillTreeNodes = [
-      {
-        id: 'gravity', name: 'Hyper Gravity', desc: 'Balls fall 35% faster through board',
-        cost: 1, req: null
-      },
-      {
-        id: 'critBounce', name: 'Critical Bounces', desc: 'Peg hits have 12% chance for 5x Cash',
-        cost: 2, req: 'gravity'
-      },
-      {
-        id: 'ballSplitter', name: 'Chain Reactions', desc: '10% Chance for ball to split on peg hit',
-        cost: 3, req: 'critBounce'
-      },
-      {
-        id: 'gemBooster', name: 'Gem Overdrive', desc: 'Double all Star & Rebirth gains forever',
-        cost: 5, req: 'ballSplitter'
-      }
+      // Tier 1 - Root Node
+      { id: 'gravity', tier: 1, tierName: 'Tier I: Core Foundation', name: 'Hyper Gravity', desc: 'Balls fall 35% faster through board', cost: 1, req: null },
+
+      // Tier 2 - Branch Left & Right
+      { id: 'critBounce', tier: 2, tierName: 'Tier II: Specialization Paths', name: 'Critical Bounces', desc: '15% Chance for peg hits to award 5x Cash', cost: 2, req: 'gravity', reqName: 'Hyper Gravity' },
+      { id: 'pegResonator', tier: 2, tierName: 'Tier II: Specialization Paths', name: 'Peg Resonator', desc: 'Peg hit cash gains increased by +150%', cost: 2, req: 'gravity', reqName: 'Hyper Gravity' },
+
+      // Tier 3 - Sub-branches
+      { id: 'ballSplitter', tier: 3, tierName: 'Tier III: Advanced Synergy', name: 'Chain Reactions', desc: '12% Chance for ball to split on peg hit', cost: 4, req: 'critBounce', reqName: 'Critical Bounces' },
+      { id: 'slotOverload', tier: 3, tierName: 'Tier III: Advanced Synergy', name: 'Slot Overload', desc: '7% Chance for slot landing to pay 4x multiplier', cost: 4, req: 'critBounce', reqName: 'Critical Bounces' },
+      { id: 'comboSurge', tier: 3, tierName: 'Tier III: Advanced Synergy', name: 'Combo Surge', desc: 'Combos build 2x faster and decay slower', cost: 4, req: 'pegResonator', reqName: 'Peg Resonator' },
+      { id: 'piggyOverdrive', tier: 3, tierName: 'Tier III: Advanced Synergy', name: 'Piggy Overdrive', desc: 'Passive vault output is tripled (3x)', cost: 4, req: 'pegResonator', reqName: 'Peg Resonator' },
+
+      // Tier 4 - Capstone Unlocks
+      { id: 'gemBooster', tier: 4, tierName: 'Tier IV: Capstones', name: 'Gem Overdrive', desc: 'Double all Star & Rebirth gains forever', cost: 8, req: 'ballSplitter', reqName: 'Chain Reactions' },
+      { id: 'darkSingularity', tier: 4, tierName: 'Tier IV: Capstones', name: 'Dark Singularity', desc: 'Reduces all ball drop costs by 50%', cost: 8, req: 'piggyOverdrive', reqName: 'Piggy Overdrive' },
+      { id: 'cosmicMastery', tier: 4, tierName: 'Tier IV: Capstones', name: 'Cosmic Mastery', desc: 'All Ball Skin multipliers boosted by +50%', cost: 12, req: 'gemBooster', reqName: 'Gem Overdrive' }
     ];
+
+    function getEffectiveDropCost() {
+      let cost = state.ballValue;
+      if (state.skills.darkSingularity) cost *= 0.5;
+      return Math.max(1, Math.round(cost));
+    }
+
+    // Global Multiplier calculation
+    function getGlobalMult() {
+      const darkMatterBoost = 1 + (state.darkMatter * 10.0);
+      return state.starIncomeMult * state.comboMult * darkMatterBoost;
+    }
 
     // --- CANVAS & PHYSICS ENGINE ---
     let canvas, ctx;
@@ -633,14 +760,28 @@
       }
     }
 
+    function addCombo() {
+      state.comboCount += state.skills.comboSurge ? 2 : 1;
+      state.comboMult = Math.min(100.0, 1.0 + (state.comboCount * 0.02));
+      
+      if (state.comboTimer) clearTimeout(state.comboTimer);
+      state.comboTimer = setTimeout(() => {
+        state.comboCount = 0;
+        state.comboMult = 1.0;
+        updateStatsUI();
+      }, state.skills.comboSurge ? 2500 : 1500);
+      updateStatsUI();
+    }
+
     function spawnBalls() {
-      if (state.balance < state.ballValue) return;
+      const dropCost = getEffectiveDropCost();
+      if (state.balance < dropCost) return;
 
       const equipped = ballSkins.find(s => s.id === state.equippedBall) || ballSkins[0];
 
       for (let i = 0; i < state.ballsPerDrop; i++) {
-        if (state.balance >= state.ballValue) {
-          state.balance -= state.ballValue;
+        if (state.balance >= dropCost) {
+          state.balance -= dropCost;
           const offset = (Math.random() * 20 - 10);
           balls.push({
             x: (canvas.width / 2) + offset,
@@ -689,16 +830,18 @@
           if (dist < minDist) {
             peg.hitGlow = 1.0;
             playSound(300 + Math.random() * 200, 0.04);
+            addCombo();
 
             let hitMult = 1.0;
-            if (state.skills.critBounce && Math.random() < 0.12) {
+            if (state.skills.critBounce && Math.random() < 0.15) {
               hitMult = 5.0;
               addParticles(peg.x, peg.y, '#ffcc00', 8);
               playSound(600, 0.08, 'square');
             }
 
             if (state.pegCash > 0) {
-              let hitEarn = state.pegCash * (ball.value / 10) * state.starIncomeMult * hitMult;
+              let pegBonusMult = state.skills.pegResonator ? 2.5 : 1.0;
+              let hitEarn = state.pegCash * (ball.value / 10) * getGlobalMult() * hitMult * pegBonusMult;
               state.balance += hitEarn;
               floatingTexts.push({
                 text: `+${formatCash(hitEarn)}`,
@@ -708,7 +851,7 @@
             }
 
             // Skill: Ball Splitter Chance
-            if (state.skills.ballSplitter && Math.random() < 0.10 && balls.length < 40) {
+            if (state.skills.ballSplitter && Math.random() < 0.12 && balls.length < 40) {
               balls.push({
                 x: ball.x + 4, y: ball.y,
                 vx: -ball.vx, vy: ball.vy,
@@ -737,14 +880,22 @@
           let slot = slots.find(s => ball.x >= s.x && ball.x < s.x + s.w);
           if (slot) {
             let skinMult = ball.skin ? ball.skin.mult : 1.0;
-            let finalMult = slot.baseMult * state.slotBoost * skinMult;
-            let winAmount = ball.value * finalMult * state.starIncomeMult;
+            if (state.skills.cosmicMastery) skinMult *= 1.5;
+
+            let slotBonus = 1.0;
+            if (state.skills.slotOverload && Math.random() < 0.07) {
+              slotBonus = 4.0;
+              playSound(900, 0.15, 'square');
+            }
+
+            let finalMult = slot.baseMult * state.slotBoost * skinMult * slotBonus;
+            let winAmount = ball.value * finalMult * getGlobalMult();
             state.balance += winAmount;
             
             floatingTexts.push({
               text: `+${formatCash(winAmount)}`,
               x: ball.x, y: canvas.height - 45, alpha: 1.0,
-              color: finalMult >= 2.5 ? '#e056fd' : '#ffcc00'
+              color: slotBonus > 1 ? '#ff3366' : (finalMult >= 2.5 ? '#e056fd' : '#ffcc00')
             });
 
             if (ball.skin && ball.skin.explosive) {
@@ -853,12 +1004,13 @@
     // Passive Loop
     setInterval(() => {
       if (state.passiveGen > 0) {
-        state.balance += state.passiveGen * state.starIncomeMult;
+        let vaultMult = state.skills.piggyOverdrive ? 3.0 : 1.0;
+        state.balance += state.passiveGen * getGlobalMult() * vaultMult;
         updateStatsUI();
       }
     }, 1000);
 
-    // --- REBIRTH & PRESTIGE LOGIC ---
+    // --- REBIRTH, PRESTIGE & ASCENSION ---
     function getPendingStars() {
       if (state.balance < 1000000) return 0;
       let mult = state.skills.gemBooster ? 2 : 1;
@@ -871,6 +1023,13 @@
       let fromCash = Math.floor(Math.pow(state.balance / 1000000000, 0.4));
       let mult = state.skills.gemBooster ? 2 : 1;
       return Math.max(1, fromStars + fromCash) * mult;
+    }
+
+    function getPendingDarkMatter() {
+      if (state.gems < 100 && state.balance < 1000000000000) return 0;
+      let fromGems = Math.floor(state.gems / 100);
+      let fromCash = Math.floor(Math.pow(state.balance / 1000000000000, 0.3));
+      return Math.max(1, fromGems + fromCash);
     }
 
     function doRebirth() {
@@ -891,6 +1050,7 @@
 
       initBoard();
       updateStatsUI();
+      saveGame();
       playSound(500, 0.3, 'square');
     }
 
@@ -915,8 +1075,129 @@
 
       initBoard();
       updateStatsUI();
+      saveGame();
       playSound(800, 0.5, 'triangle');
     }
+
+    function doAscend() {
+      let earnedDM = getPendingDarkMatter();
+      if (earnedDM <= 0) return;
+
+      state.darkMatter += earnedDM;
+      state.gems = 0;
+      state.stars = 0;
+      state.balance = 250;
+      state.rows = 8;
+      state.pegCash = 0;
+      state.slotBoost = 1.0;
+      state.ballsPerDrop = 1;
+      state.passiveGen = 0;
+      state.starIncomeMult = 1.0;
+      state.starStartCash = 250;
+      
+      // Wipe Skill Tree
+      Object.keys(state.skills).forEach(k => state.skills[k] = false);
+
+      if (state.autoDropInterval) clearInterval(state.autoDropInterval);
+
+      cashUpgrades.forEach(u => { u.level = 0; u.cost = Math.round(u.costMult * 20); });
+      starUpgrades.forEach(u => { u.level = 0; u.cost = Math.round(u.costMult * 1); });
+
+      initBoard();
+      buildSkillTree();
+      updateStatsUI();
+      saveGame();
+      playSound(1200, 0.8, 'sawtooth');
+    }
+
+    // --- SAVE / LOAD / HARD RESET ENGINE ---
+    function saveGame() {
+      state.lastSaved = Date.now();
+      const saveObj = {
+        balance: state.balance,
+        stars: state.stars,
+        gems: state.gems,
+        darkMatter: state.darkMatter,
+        ballValue: state.ballValue,
+        equippedBall: state.equippedBall,
+        skills: state.skills,
+        lastSaved: state.lastSaved,
+        cashUpgrades: cashUpgrades.map(u => ({ id: u.id, level: u.level, cost: u.cost })),
+        starUpgrades: starUpgrades.map(u => ({ id: u.id, level: u.level, cost: u.cost })),
+        skinsUnlocked: ballSkins.map(s => ({ id: s.id, unlocked: s.unlocked }))
+      };
+      localStorage.setItem('plinko_deluxe_save', JSON.stringify(saveObj));
+    }
+
+    function loadGame() {
+      const raw = localStorage.getItem('plinko_deluxe_save');
+      if (!raw) return;
+
+      try {
+        const data = JSON.parse(raw);
+        state.balance = data.balance ?? 250;
+        state.stars = data.stars ?? 0;
+        state.gems = data.gems ?? 0;
+        state.darkMatter = data.darkMatter ?? 0;
+        state.ballValue = data.ballValue ?? 10;
+        state.equippedBall = data.equippedBall ?? 'cyan';
+        state.skills = { ...state.skills, ...(data.skills || {}) };
+
+        if (data.cashUpgrades) {
+          data.cashUpgrades.forEach(savedU => {
+            let u = cashUpgrades.find(x => x.id === savedU.id);
+            if (u) {
+              u.level = savedU.level;
+              u.cost = savedU.cost;
+              u.onBuy(u);
+            }
+          });
+        }
+
+        if (data.starUpgrades) {
+          data.starUpgrades.forEach(savedU => {
+            let u = starUpgrades.find(x => x.id === savedU.id);
+            if (u) {
+              u.level = savedU.level;
+              u.cost = savedU.cost;
+              u.onBuy(u);
+            }
+          });
+        }
+
+        if (data.skinsUnlocked) {
+          data.skinsUnlocked.forEach(savedS => {
+            let s = ballSkins.find(x => x.id === savedS.id);
+            if (s) s.unlocked = savedS.unlocked;
+          });
+        }
+
+        // Offline Earnings Calculation
+        const now = Date.now();
+        const diffSec = Math.floor((now - (data.lastSaved || now)) / 1000);
+        if (diffSec > 10 && state.passiveGen > 0) {
+          const offlineMaxSec = 86400; // Cap at 24 hours
+          const calcSec = Math.min(diffSec, offlineMaxSec);
+          const earned = calcSec * state.passiveGen * getGlobalMult();
+          state.balance += earned;
+          setTimeout(() => {
+            alert(`OFFLINE EARNINGS!\n\nWhile away for ${Math.floor(calcSec / 60)} minutes, your Piggy Vault generated ${formatCash(earned)}!`);
+          }, 300);
+        }
+      } catch(e) {
+        console.error("Save file read error:", e);
+      }
+    }
+
+    function hardResetAll() {
+      if (confirm("DANGER: WIPE ALL DATA?\n\nAre you 100% sure you want to hard reset?\nThis wipes Cash, Stars, Gems, Dark Matter, and Skill Tree nodes with ZERO rewards or bonuses granted!")) {
+        localStorage.removeItem('plinko_deluxe_save');
+        location.reload();
+      }
+    }
+
+    // Periodically Auto-Save
+    setInterval(saveGame, 5000);
 
     // --- UI BUILD & UPDATE ---
     function buildUpgradeList(containerId, upgradeArray) {
@@ -953,13 +1234,15 @@
       ballSkins.forEach(b => {
         const item = document.createElement('div');
         item.className = 'upgrade-item';
+        const isEquipped = state.equippedBall === b.id;
+
         item.innerHTML = `
           <div class="upgrade-info">
             <span class="upgrade-name" style="color: ${b.color}">${b.name} (${b.mult}x Mult)</span>
             <span class="upgrade-desc">${b.explosive ? 'Explodes on landing!' : 'Custom trail effect'}</span>
           </div>
-          <button class="upgrade-btn" id="ballbtn-${b.id}">
-            ${b.unlocked ? (state.equippedBall === b.id ? 'Equipped' : 'Equip') : b.costText}
+          <button class="upgrade-btn" id="ballbtn-${b.id}" style="${isEquipped ? 'background: var(--accent-cyan); border-bottom-color: #0088ff;' : ''}">
+            ${b.unlocked ? (isEquipped ? 'EQUIPPED' : 'EQUIP') : b.costText}
           </button>
         `;
         listContainer.appendChild(item);
@@ -968,47 +1251,81 @@
           if (b.unlocked) {
             state.equippedBall = b.id;
           } else {
-            let res = b.currency === 'stars' ? state.stars : state.gems;
+            let res = b.currency === 'stars' ? state.stars : (b.currency === 'gems' ? state.gems : state.darkMatter);
             if (res >= b.cost) {
               if (b.currency === 'stars') state.stars -= b.cost;
-              else state.gems -= b.cost;
+              else if (b.currency === 'gems') state.gems -= b.cost;
+              else state.darkMatter -= b.cost;
+              
               b.unlocked = true;
               state.equippedBall = b.id;
             }
           }
           buildBallSkins();
           updateStatsUI();
+          saveGame();
         });
       });
     }
 
     function buildSkillTree() {
-      const listContainer = document.getElementById('skillTreeList');
-      if (!listContainer) return;
-      listContainer.innerHTML = '';
+      const container = document.getElementById('skillTreeContainer');
+      if (!container) return;
+      container.innerHTML = '';
 
+      // Group nodes by Tier
+      const tiers = [1, 2, 3, 4];
+
+      tiers.forEach(t => {
+        const nodesInTier = skillTreeNodes.filter(n => n.tier === t);
+        if (nodesInTier.length === 0) return;
+
+        const tierHeader = document.createElement('div');
+        tierHeader.className = 'skill-tier-header';
+        tierHeader.textContent = nodesInTier[0].tierName;
+        container.appendChild(tierHeader);
+
+        const row = document.createElement('div');
+        row.className = 'skill-tier-row';
+
+        nodesInTier.forEach(node => {
+          const isUnlocked = state.skills[node.id];
+          const hasReq = !node.req || state.skills[node.req];
+          
+          const card = document.createElement('div');
+          card.className = `skill-card ${isUnlocked ? 'unlocked' : (hasReq ? 'available' : 'locked')}`;
+
+          card.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+              <span style="font-weight: 800; font-size: 0.85rem;">${node.name}</span>
+              ${node.req ? `<span class="branch-badge ${hasReq ? 'met' : ''}">${hasReq ? '✓ Met' : '↳ Req: ' + node.reqName}</span>` : ''}
+            </div>
+            <div style="font-size: 0.7rem; color: var(--text-sub);">${node.desc}</div>
+            <button class="upgrade-btn" id="skillbtn-${node.id}" style="margin-top: 4px; background: var(--accent-gem); border-bottom-color: #8e1da3;">
+              ${isUnlocked ? 'UNLOCKED' : (hasReq ? node.cost + ' 💎' : 'LOCKED')}
+            </button>
+          `;
+          row.appendChild(card);
+        });
+
+        container.appendChild(row);
+      });
+
+      // Bind events
       skillTreeNodes.forEach(node => {
-        const isUnlocked = state.skills[node.id];
-        const card = document.createElement('div');
-        card.className = `skill-card ${isUnlocked ? 'unlocked' : ''}`;
+        const btn = document.getElementById(`skillbtn-${node.id}`);
+        if (!btn) return;
+        
+        btn.addEventListener('click', () => {
+          const isUnlocked = state.skills[node.id];
+          const hasReq = !node.req || state.skills[node.req];
 
-        card.innerHTML = `
-          <div style="font-weight: 800; font-size: 0.85rem;">${node.name}</div>
-          <div style="font-size: 0.7rem; color: var(--text-sub);">${node.desc}</div>
-          <button class="upgrade-btn" id="skillbtn-${node.id}" style="margin-top: 4px; background: var(--accent-gem); border-bottom-color: #8e1da3;">
-            ${isUnlocked ? 'UNLOCKED' : node.cost + ' 💎'}
-          </button>
-        `;
-        listContainer.appendChild(card);
-
-        document.getElementById(`skillbtn-${node.id}`).addEventListener('click', () => {
-          if (!isUnlocked && state.gems >= node.cost) {
-            if (!node.req || state.skills[node.req]) {
-              state.gems -= node.cost;
-              state.skills[node.id] = true;
-              buildSkillTree();
-              updateStatsUI();
-            }
+          if (!isUnlocked && hasReq && state.gems >= node.cost) {
+            state.gems -= node.cost;
+            state.skills[node.id] = true;
+            buildSkillTree();
+            updateStatsUI();
+            saveGame();
           }
         });
       });
@@ -1018,9 +1335,15 @@
       document.getElementById('balance').textContent = formatCash(state.balance);
       document.getElementById('starsStat').textContent = `${formatVal(state.stars)} ⭐`;
       document.getElementById('gemsStat').textContent = `${formatVal(state.gems)} 💎`;
-      document.getElementById('passiveStat').textContent = `${formatCash(state.passiveGen * state.starIncomeMult)}/s`;
-      document.getElementById('dropCost').textContent = formatVal(state.ballValue);
-      document.getElementById('dropBtn').disabled = state.balance < state.ballValue;
+      document.getElementById('darkMatterStat').textContent = `${formatVal(state.darkMatter)} 🌌`;
+      document.getElementById('comboStat').textContent = `${state.comboMult.toFixed(2)}x`;
+      
+      let vaultMult = state.skills.piggyOverdrive ? 3.0 : 1.0;
+      document.getElementById('passiveStat').textContent = `${formatCash(state.passiveGen * getGlobalMult() * vaultMult)}/s`;
+      
+      const dropCost = getEffectiveDropCost();
+      document.getElementById('dropCost').textContent = formatVal(dropCost);
+      document.getElementById('dropBtn').disabled = state.balance < dropCost;
 
       const equipped = ballSkins.find(s => s.id === state.equippedBall);
       if (equipped) document.getElementById('equippedBallName').textContent = `Equipped: ${equipped.name}`;
@@ -1052,10 +1375,15 @@
       // Reset info UI
       const pendingStars = getPendingStars();
       const pendingGems = getPendingGems();
+      const pendingDM = getPendingDarkMatter();
+      
       document.getElementById('pendingStars').textContent = `+${formatVal(pendingStars)} ⭐`;
       document.getElementById('pendingGems').textContent = `+${formatVal(pendingGems)} 💎`;
+      document.getElementById('pendingDarkMatter').textContent = `+${formatVal(pendingDM)} 🌌`;
+
       document.getElementById('btnRebirth').disabled = pendingStars <= 0;
       document.getElementById('btnPrestige').disabled = pendingGems <= 0;
+      document.getElementById('btnAscend').disabled = pendingDM <= 0;
     }
 
     function buyUpgrade(u) {
@@ -1070,6 +1398,7 @@
         u.onBuy(u);
         u.cost = Math.round(u.cost * u.costMult);
         updateStatsUI();
+        saveGame();
       }
     }
 
@@ -1092,7 +1421,8 @@
         { btn: 'tabStars', panel: 'panelStars' },
         { btn: 'tabSkillTree', panel: 'panelSkillTree' },
         { btn: 'tabBalls', panel: 'panelBalls' },
-        { btn: 'tabResets', panel: 'panelResets' }
+        { btn: 'tabResets', panel: 'panelResets' },
+        { btn: 'tabSettings', panel: 'panelSettings' }
       ];
 
       tabs.forEach(t => {
@@ -1131,13 +1461,23 @@
       document.getElementById('btnTenPct').addEventListener('click', () => setBetFraction(0.1));
       document.getElementById('btnMax').addEventListener('click', () => setBetFraction(1.0));
       document.getElementById('dropBtn').addEventListener('click', spawnBalls);
+      
       document.getElementById('btnRebirth').addEventListener('click', doRebirth);
       document.getElementById('btnPrestige').addEventListener('click', doPrestige);
+      document.getElementById('btnAscend').addEventListener('click', doAscend);
+
+      document.getElementById('btnSaveNow').addEventListener('click', () => {
+        saveGame();
+        alert('Game state successfully saved!');
+      });
+      document.getElementById('btnHardReset').addEventListener('click', hardResetAll);
 
       setupTabs();
       initBoard();
       buildUpgradeList('panelUpgrades', cashUpgrades);
       buildUpgradeList('panelStars', starUpgrades);
+      
+      loadGame();
       buildSkillTree();
       buildBallSkins();
       updateStatsUI();
