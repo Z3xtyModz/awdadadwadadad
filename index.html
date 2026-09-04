@@ -3,299 +3,696 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Plinko of Olympus</title>
+  <title>Plinko of Olympus: Deluxe Ascension</title>
+  
   <!-- Google Font: Fredoka -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
     :root {
       --gold: #fbbf24;
       --gold-dark: #b45309;
+      --gold-glow: rgba(251, 191, 36, 0.4);
       --sky: #38bdf8;
-      --purple: #818cf8;
-      --bg: #0f172a;
-      --panel: rgba(30, 41, 59, 0.9);
+      --purple: #a855f7;
+      --crimson: #ef4444;
+      --bg-dark: #090d16;
+      --panel-bg: rgba(22, 30, 46, 0.92);
+      --border-color: #334155;
+      --font-main: 'Fredoka', cursive, sans-serif;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
 
     body {
-      background: radial-gradient(circle at top, #1e1b4b 0%, #0f172a 100%);
+      background: radial-gradient(circle at top center, #1e1b4b 0%, #0f172a 60%, #090d16 100%);
       color: #f8fafc;
-      font-family: 'Fredoka', cursive, sans-serif;
+      font-family: var(--font-main);
       display: flex;
       flex-direction: column;
       align-items: center;
       min-height: 100vh;
       padding: 15px;
-      user-select: none;
+      overflow-x: hidden;
     }
 
-    h1 {
-      font-size: 2.5rem;
-      color: var(--gold);
-      text-shadow: 0 4px 0 #78350f, 0 0 15px rgba(251, 191, 36, 0.5);
-      margin-bottom: 12px;
-      letter-spacing: 1px;
-    }
-
-    .main-layout {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 15px;
-      justify-content: center;
-      max-width: 1050px;
+    /* --- HEADER & CURRENCY BAR --- */
+    header {
       width: 100%;
-    }
-
-    .panel {
-      background: var(--panel);
+      max-width: 1150px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding: 12px 20px;
+      background: var(--panel-bg);
       border: 3px solid var(--gold-dark);
       border-radius: 20px;
-      padding: 16px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-      backdrop-filter: blur(8px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
     }
 
-    /* Controls Panel */
-    .controls {
-      flex: 1;
-      min-width: 260px;
-      max-width: 300px;
+    .logo-container {
       display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .stat-box {
-      background: #0f172a;
-      border: 2px solid #334155;
-      padding: 10px;
-      border-radius: 14px;
-      text-align: center;
-    }
-
-    .stat-label { font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; }
-    .stat-value { font-size: 1.6rem; color: var(--gold); }
-
-    .control-group { display: flex; flex-direction: column; gap: 4px; }
-    label { font-size: 0.85rem; color: #cbd5e1; }
-
-    input, select {
-      background: #0f172a;
-      border: 2px solid #475569;
-      color: #fff;
-      padding: 8px 12px;
-      border-radius: 10px;
-      font-family: 'Fredoka', sans-serif;
-      font-size: 1rem;
-      outline: none;
-    }
-
-    .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-
-    button {
-      font-family: 'Fredoka', sans-serif;
-      padding: 8px;
-      border: none;
-      border-radius: 10px;
-      font-size: 0.95rem;
-      cursor: pointer;
-      transition: all 0.1s ease;
-      background: #334155;
-      color: #fff;
-      box-shadow: 0 3px 0 #1e293b;
-    }
-
-    button:hover { transform: translateY(-1px); }
-    button:active { transform: translateY(2px); box-shadow: none; }
-
-    .btn-drop {
-      background: linear-gradient(180deg, #fbbf24 0%, #d97706 100%);
-      color: #000;
-      font-size: 1.25rem;
-      padding: 12px;
-      box-shadow: 0 4px 0 #78350f;
-    }
-
-    .btn-auto {
-      background: #38bdf8;
-      color: #000;
-      box-shadow: 0 3px 0 #0284c7;
-    }
-
-    .btn-auto.active {
-      background: #ef4444;
-      color: #fff;
-      box-shadow: 0 3px 0 #991b1b;
-    }
-
-    /* Tabs & Side Content */
-    .tab-section {
-      flex: 1;
-      min-width: 260px;
-      max-width: 300px;
-      display: flex;
-      flex-direction: column;
+      align-items: center;
       gap: 10px;
     }
 
-    .tab-buttons { display: flex; gap: 6px; }
-    .tab-btn { flex: 1; background: #1e293b; border: 2px solid #334155; }
-    .tab-btn.active { background: var(--gold-dark); border-color: var(--gold); }
+    .logo-container h1 {
+      font-size: 2rem;
+      color: var(--gold);
+      text-shadow: 0 3px 0 #78350f, 0 0 12px var(--gold-glow);
+      letter-spacing: 1px;
+    }
 
-    .tab-content { display: none; flex-direction: column; gap: 10px; }
-    .tab-content.active { display: flex; }
+    .currency-display {
+      display: flex;
+      gap: 15px;
+    }
 
-    /* Upgrades UI */
-    .upgrade-card {
+    .currency-card {
       background: #0f172a;
-      border: 2px solid #334155;
+      border: 2px solid var(--border-color);
+      padding: 6px 14px;
       border-radius: 12px;
-      padding: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .currency-card .label { font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; }
+    .currency-card .value { font-size: 1.3rem; color: var(--gold); font-weight: 700; }
+    .currency-card.ambrosia .value { color: var(--purple); }
+
+    /* --- LAYOUT GRID --- */
+    .app-container {
+      display: flex;
+      gap: 15px;
+      width: 100%;
+      max-width: 1150px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .panel {
+      background: var(--panel-bg);
+      border: 3px solid var(--gold-dark);
+      border-radius: 20px;
+      padding: 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      backdrop-filter: blur(10px);
+    }
+
+    /* --- LEFT PANEL: BETTING CONTROLS & GOD POWERS --- */
+    .control-panel {
+      flex: 1;
+      min-width: 290px;
+      max-width: 330px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .section-title {
+      font-size: 1.1rem;
+      color: var(--sky);
+      border-bottom: 2px solid var(--border-color);
+      padding-bottom: 4px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
 
-    .upgrade-info { font-size: 0.8rem; }
-    .upgrade-title { font-size: 0.95rem; color: var(--gold); }
-
-    /* Leaderboard UI */
-    .leaderboard-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
+    /* Custom Stepper Input */
+    .custom-field-label {
+      font-size: 0.85rem;
+      color: #cbd5e1;
+      margin-bottom: 4px;
     }
 
-    .leaderboard-item {
+    .custom-stepper {
+      display: flex;
+      align-items: center;
       background: #0f172a;
-      padding: 8px 12px;
-      border-radius: 10px;
+      border: 2px solid var(--border-color);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .stepper-btn {
+      background: #1e293b;
+      color: #fff;
+      border: none;
+      width: 42px;
+      height: 42px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    .stepper-btn:hover { background: #334155; }
+    .stepper-btn:active { background: var(--gold-dark); }
+
+    .stepper-value {
+      flex: 1;
+      text-align: center;
+      font-size: 1.1rem;
+      color: var(--gold);
+      font-weight: 700;
+    }
+
+    .preset-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .preset-btn {
+      background: #1e293b;
+      border: 2px solid var(--border-color);
+      color: #94a3b8;
+      border-radius: 8px;
+      padding: 6px;
+      font-size: 0.8rem;
+      font-family: var(--font-main);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .preset-btn:hover { background: #334155; color: #fff; }
+
+    /* Custom Dropdown Component */
+    .custom-dropdown {
+      position: relative;
+    }
+
+    .dropdown-trigger {
+      background: #0f172a;
+      border: 2px solid var(--border-color);
+      border-radius: 12px;
+      padding: 10px 14px;
       display: flex;
       justify-content: space-between;
-      font-size: 0.85rem;
+      align-items: center;
+      cursor: pointer;
+      transition: border-color 0.2s ease;
     }
 
-    /* Canvas Board */
-    .board-container { display: flex; flex-direction: column; align-items: center; }
+    .dropdown-trigger:hover { border-color: var(--gold); }
+
+    .dropdown-menu {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      width: 100%;
+      background: #0f172a;
+      border: 2px solid var(--gold-dark);
+      border-radius: 12px;
+      overflow: hidden;
+      display: none;
+      z-index: 100;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+    }
+
+    .dropdown-menu.open { display: block; }
+
+    .dropdown-option {
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background 0.15s ease;
+    }
+
+    .dropdown-option:hover { background: #1e293b; color: var(--gold); }
+    .dropdown-option.selected { background: var(--gold-dark); color: #fff; }
+
+    /* Main Drop & Auto Buttons */
+    .btn-action-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .btn-drop {
+      background: linear-gradient(180deg, #fbbf24 0%, #d97706 100%);
+      color: #000;
+      font-size: 1.3rem;
+      font-weight: 700;
+      padding: 14px;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      box-shadow: 0 5px 0 #78350f, 0 10px 20px rgba(245, 158, 11, 0.3);
+      transition: all 0.1s ease;
+      font-family: var(--font-main);
+    }
+
+    .btn-drop:hover { transform: translateY(-2px); filter: brightness(1.1); }
+    .btn-drop:active { transform: translateY(3px); box-shadow: 0 2px 0 #78350f; }
+
+    .btn-auto {
+      background: #38bdf8;
+      color: #000;
+      font-size: 1rem;
+      font-weight: 700;
+      padding: 10px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #0284c7;
+      transition: all 0.15s ease;
+      font-family: var(--font-main);
+    }
+
+    .btn-auto.active { background: #ef4444; color: #fff; box-shadow: 0 4px 0 #991b1b; }
+
+    /* God Abilities Bar */
+    .god-abilities {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .ability-btn {
+      background: #0f172a;
+      border: 2px solid var(--border-color);
+      border-radius: 12px;
+      padding: 8px 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: var(--font-main);
+    }
+
+    .ability-btn:hover:not(.cooldown) { border-color: var(--gold); transform: translateY(-2px); }
+    .ability-btn.cooldown { opacity: 0.4; cursor: not-allowed; }
+
+    .ability-icon { font-size: 1.5rem; }
+    .ability-name { font-size: 0.7rem; color: #cbd5e1; text-align: center; }
+
+    /* --- CENTER PANEL: CANVAS BOARD --- */
+    .board-panel {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
 
     canvas {
       background: radial-gradient(circle at center, #1e293b 0%, #090d16 100%);
       border-radius: 16px;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
     }
 
     .history-feed {
       display: flex;
       gap: 6px;
       overflow: hidden;
-      max-width: 440px;
-      height: 32px;
+      max-width: 460px;
+      height: 34px;
       align-items: center;
-      margin-top: 8px;
+      margin-top: 10px;
     }
 
     .history-tag {
-      padding: 3px 8px;
-      border-radius: 6px;
-      font-size: 0.8rem;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: bold;
       animation: pop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
     @keyframes pop { from { transform: scale(0); } to { transform: scale(1); } }
+
+    /* --- RIGHT PANEL: TABS & SYSTEM HUBS --- */
+    .hub-panel {
+      flex: 1;
+      min-width: 300px;
+      max-width: 340px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .tab-bar {
+      display: flex;
+      background: #0f172a;
+      padding: 4px;
+      border-radius: 12px;
+      border: 2px solid var(--border-color);
+      gap: 4px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 8px 4px;
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      font-size: 0.75rem;
+      font-family: var(--font-main);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn.active {
+      background: var(--gold-dark);
+      color: #fff;
+      font-weight: bold;
+    }
+
+    .tab-content {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 480px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .tab-content.active { display: flex; }
+
+    /* Scrollbar Styling */
+    .tab-content::-webkit-scrollbar { width: 6px; }
+    .tab-content::-webkit-scrollbar-thumb { background: var(--gold-dark); border-radius: 6px; }
+
+    /* System Cards */
+    .system-card {
+      background: #0f172a;
+      border: 2px solid var(--border-color);
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-info { display: flex; flex-direction: column; gap: 2px; }
+    .card-title { font-size: 0.95rem; color: var(--gold); }
+    .card-desc { font-size: 0.75rem; color: #94a3b8; }
+    .card-cost { font-size: 0.8rem; color: var(--sky); margin-top: 2px; }
+
+    .card-btn {
+      background: var(--gold-dark);
+      color: #fff;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-family: var(--font-main);
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: background 0.15s ease;
+    }
+
+    .card-btn:hover { background: var(--gold); color: #000; }
+    .card-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* Custom Toggle Switch */
+    .toggle-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .custom-toggle {
+      width: 46px;
+      height: 24px;
+      background: #334155;
+      border-radius: 12px;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .custom-toggle.on { background: var(--gold); }
+
+    .toggle-handle {
+      width: 18px;
+      height: 18px;
+      background: #fff;
+      border-radius: 50%;
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      transition: transform 0.2s ease;
+    }
+
+    .custom-toggle.on .toggle-handle { transform: translateX(22px); }
+
   </style>
 </head>
 <body>
 
-  <h1>⚡ PLINKO OF OLYMPUS ⚡</h1>
+  <!-- HEADER -->
+  <header>
+    <div class="logo-container">
+      <h1>⚡ Plinko of Olympus</h1>
+    </div>
+    <div class="currency-display">
+      <div class="currency-card">
+        <div>
+          <div class="label">Gold Denarii</div>
+          <div class="value" id="balanceDisplay">1,000 🪙</div>
+        </div>
+      </div>
+      <div class="currency-card ambrosia">
+        <div>
+          <div class="label">Divine Ambrosia</div>
+          <div class="value" id="ambrosiaDisplay">0 🍇</div>
+        </div>
+      </div>
+    </div>
+  </header>
 
-  <div class="main-layout">
-    <!-- Betting Controls Panel -->
-    <div class="panel controls">
-      <div class="stat-box">
-        <div class="stat-label">Treasury</div>
-        <div class="stat-value" id="balanceDisplay">1,000.00 🪙</div>
+  <!-- MAIN APP GRID -->
+  <div class="app-container">
+    
+    <!-- LEFT PANEL: CONTROLS -->
+    <div class="panel control-panel">
+      <div class="section-title">
+        <span>Betting Controls</span>
+        <span style="font-size: 0.8rem; color: #94a3b8;" id="rtpDisplay">RTP: 99%</span>
       </div>
 
-      <div class="control-group">
-        <label>Bet Amount</label>
-        <input type="number" id="betInput" value="10" min="1">
-        <div class="btn-grid">
-          <button onclick="adjustBet(0.5)">½x</button>
-          <button onclick="adjustBet(2)">2x</button>
+      <!-- Custom Stepper Bet Input -->
+      <div>
+        <div class="custom-field-label">Bet Amount (Denarii)</div>
+        <div class="custom-stepper">
+          <button class="stepper-btn" onclick="stepBet(-10)">-</button>
+          <div class="stepper-value" id="betValueDisplay">10 🪙</div>
+          <button class="stepper-btn" onclick="stepBet(10)">+</button>
+        </div>
+        <div class="preset-grid">
+          <button class="preset-btn" onclick="setBetPreset('min')">MIN</button>
+          <button class="preset-btn" onclick="setBetPreset('half')">½X</button>
+          <button class="preset-btn" onclick="setBetPreset('double')">2X</button>
+          <button class="preset-btn" onclick="setBetPreset('max')">MAX</button>
         </div>
       </div>
 
-      <div class="control-group">
-        <label>God's Favor (Risk)</label>
-        <select id="riskSelect" onchange="updateRisk()">
-          <option value="low">Hermes (Low Risk)</option>
-          <option value="medium" selected>Athena (Medium Risk)</option>
-          <option value="high">Zeus (High Risk)</option>
-        </select>
+      <!-- Custom Dropdown: Risk Level -->
+      <div>
+        <div class="custom-field-label">God's Favor (Risk Level)</div>
+        <div class="custom-dropdown" id="riskDropdown">
+          <div class="dropdown-trigger" onclick="toggleDropdown('riskDropdown')">
+            <span id="riskSelectedText">🦉 Athena (Medium)</span>
+            <span>▼</span>
+          </div>
+          <div class="dropdown-menu">
+            <div class="dropdown-option" onclick="selectRisk('low', '🪽 Hermes (Low)')">🪽 Hermes (Low)</div>
+            <div class="dropdown-option selected" onclick="selectRisk('medium', '🦉 Athena (Medium)')">🦉 Athena (Medium)</div>
+            <div class="dropdown-option" onclick="selectRisk('high', '⚡ Zeus (High)')">⚡ Zeus (High)</div>
+          </div>
+        </div>
       </div>
 
-      <button class="btn-drop" onclick="dropBall()">Drop Orb ⚡</button>
-      <button class="btn-auto" id="autoBtn" onclick="toggleAutoDrop()">Auto-Drop: OFF</button>
+      <!-- Custom Dropdown: Row Count -->
+      <div>
+        <div class="custom-field-label">Temple Rows</div>
+        <div class="custom-dropdown" id="rowDropdown">
+          <div class="dropdown-trigger" onclick="toggleDropdown('rowDropdown')">
+            <span id="rowSelectedText">8 Rows</span>
+            <span>▼</span>
+          </div>
+          <div class="dropdown-menu">
+            <div class="dropdown-option selected" onclick="selectRows(8, '8 Rows')">8 Rows</div>
+            <div class="dropdown-option" onclick="selectRows(10, '10 Rows')">10 Rows</div>
+            <div class="dropdown-option" onclick="selectRows(12, '12 Rows')">12 Rows</div>
+            <div class="dropdown-option" onclick="selectRows(14, '14 Rows')">14 Rows</div>
+            <div class="dropdown-option" onclick="selectRows(16, '16 Rows')">16 Rows</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="btn-action-group">
+        <button class="btn-drop" onclick="dropBall()">Drop Orb ⚡</button>
+        <button class="btn-auto" id="autoBtn" onclick="toggleAutoDrop()">Auto-Drop: OFF</button>
+      </div>
+
+      <!-- God Powers -->
+      <div class="section-title" style="margin-top: 6px;">
+        <span>Divine Abilities</span>
+      </div>
+      <div class="god-abilities">
+        <div class="ability-btn" id="abilityZeus" onclick="triggerGodPower('zeus')">
+          <div class="ability-icon">⚡</div>
+          <div class="ability-name">Zeus Wrath</div>
+        </div>
+        <div class="ability-btn" id="abilityPoseidon" onclick="triggerGodPower('poseidon')">
+          <div class="ability-icon">🌊</div>
+          <div class="ability-name">Tidal Surge</div>
+        </div>
+        <div class="ability-btn" id="abilityHermes" onclick="triggerGodPower('hermes')">
+          <div class="ability-icon">🪽</div>
+          <div class="ability-name">Hermes Rush</div>
+        </div>
+      </div>
     </div>
 
-    <!-- Main Game Board -->
-    <div class="panel board-container">
-      <canvas id="plinkoCanvas" width="440" height="480"></canvas>
+    <!-- CENTER PANEL: PLINKO BOARD -->
+    <div class="panel board-panel">
+      <canvas id="plinkoCanvas" width="460" height="500"></canvas>
       <div class="history-feed" id="historyFeed"></div>
     </div>
 
-    <!-- Tabs: Upgrades & Leaderboards -->
-    <div class="panel tab-section">
-      <div class="tab-buttons">
-        <button class="tab-btn active" onclick="switchTab('upgrades')">Upgrades</button>
-        <button class="tab-btn" onclick="switchTab('leaderboard')">Pantheon</button>
+    <!-- RIGHT PANEL: HUBS & SYSTEMS -->
+    <div class="panel hub-panel">
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="switchTab('shop')">Shop</button>
+        <button class="tab-btn" onclick="switchTab('relics')">Ascension</button>
+        <button class="tab-btn" onclick="switchTab('quests')">Quests</button>
+        <button class="tab-btn" onclick="switchTab('skins')">Skins</button>
+        <button class="tab-btn" onclick="switchTab('stats')">Stats</button>
       </div>
 
-      <!-- Upgrades Tab -->
-      <div class="tab-content active" id="tab-upgrades">
-        <div class="upgrade-card">
-          <div class="upgrade-info">
-            <div class="upgrade-title">Midas Blessing</div>
-            <div>+10% All Multipliers</div>
-            <div style="color:var(--gold)" id="midasCost">Cost: 100 🪙</div>
+      <!-- Shop Tab -->
+      <div class="tab-content active" id="tab-shop">
+        <div class="system-card">
+          <div class="card-info">
+            <div class="card-title">Midas Touch</div>
+            <div class="card-desc">+10% All Bin Multipliers</div>
+            <div class="card-cost" id="midasCostText">Cost: 150 🪙</div>
           </div>
-          <button onclick="buyUpgrade('midas')">Buy</button>
+          <button class="card-btn" onclick="buyShopUpgrade('midas')">Buy</button>
         </div>
 
-        <div class="upgrade-card">
-          <div class="upgrade-info">
-            <div class="upgrade-title">Temple Tribute</div>
-            <div>+2 Passive 🪙/sec</div>
-            <div style="color:var(--gold)" id="tributeCost">Cost: 150 🪙</div>
+        <div class="system-card">
+          <div class="card-info">
+            <div class="card-title">Temple Tribute</div>
+            <div class="card-desc">+5 Passive 🪙/sec</div>
+            <div class="card-cost" id="tributeCostText">Cost: 200 🪙</div>
           </div>
-          <button onclick="buyUpgrade('tribute')">Buy</button>
+          <button class="card-btn" onclick="buyShopUpgrade('tribute')">Buy</button>
         </div>
 
-        <div class="upgrade-card">
-          <div class="upgrade-info">
-            <div class="upgrade-title">Gravitational Might</div>
-            <div>Faster Drops & Physics</div>
-            <div style="color:var(--gold)" id="gravityCost">Cost: 200 🪙</div>
+        <div class="system-card">
+          <div class="card-info">
+            <div class="card-title">Orb Multiplier</div>
+            <div class="card-desc">10% Chance to drop 2x Orbs</div>
+            <div class="card-cost" id="dupeCostText">Cost: 350 🪙</div>
           </div>
-          <button onclick="buyUpgrade('gravity')">Buy</button>
+          <button class="card-btn" onclick="buyShopUpgrade('dupe')">Buy</button>
         </div>
       </div>
 
-      <!-- Leaderboard Tab -->
-      <div class="tab-content" id="tab-leaderboard">
-        <ul class="leaderboard-list" id="leaderboardList"></ul>
+      <!-- Ascension / Relics Tab -->
+      <div class="tab-content" id="tab-relics">
+        <div class="system-card" style="border-color: var(--purple);">
+          <div class="card-info">
+            <div class="card-title" style="color: var(--purple);">Ascend to Olympus</div>
+            <div class="card-desc">Reset Gold for Divine Ambrosia</div>
+            <div class="card-cost" id="ascendRewardText">Reward: 0 🍇</div>
+          </div>
+          <button class="card-btn" style="background: var(--purple);" onclick="ascend()">Ascend</button>
+        </div>
+
+        <div class="system-card">
+          <div class="card-info">
+            <div class="card-title">Crown of Zeus</div>
+            <div class="card-desc">+25% Base Multipliers</div>
+            <div class="card-cost">Cost: 1 🍇</div>
+          </div>
+          <button class="card-btn" onclick="buyRelic('zeusCrown')">Unlock</button>
+        </div>
       </div>
+
+      <!-- Quests Tab -->
+      <div class="tab-content" id="tab-quests">
+        <div class="system-card" id="questCard1">
+          <div class="card-info">
+            <div class="card-title">Orb Dropper</div>
+            <div class="card-desc" id="quest1Desc">Drop 25 Orbs (0/25)</div>
+            <div class="card-cost">Reward: 100 🪙</div>
+          </div>
+          <button class="card-btn" id="quest1Btn" onclick="claimQuest(1)" disabled>Claim</button>
+        </div>
+      </div>
+
+      <!-- Skins Tab -->
+      <div class="tab-content" id="tab-skins">
+        <div class="system-card">
+          <div class="card-info">
+            <div class="card-title">Lightning Orb</div>
+            <div class="card-desc">Default Golden Blue Orb</div>
+          </div>
+          <button class="card-btn" onclick="equipSkin('lightning')">Equip</button>
+        </div>
+        <div class="system-card">
+          <div class="card-info">
+            <div class="card-title">Hades Fireball</div>
+            <div class="card-desc">Fiery Crimson Particle Trail</div>
+          </div>
+          <button class="card-btn" onclick="equipSkin('fireball')">Equip</button>
+        </div>
+      </div>
+
+      <!-- Stats Tab -->
+      <div class="tab-content" id="tab-stats">
+        <div class="toggle-row">
+          <span>Sound FX</span>
+          <div class="custom-toggle on" id="soundToggle" onclick="toggleSound()">
+            <div class="toggle-handle"></div>
+          </div>
+        </div>
+        <div class="system-card">
+          <div class="card-info">
+            <div class="card-title">Lifetime Drops</div>
+            <div class="card-desc" id="statTotalDrops">0</div>
+          </div>
+        </div>
+        <div class="system-card">
+          <div class="card-info">
+            <div class="card-title">Max Single Win</div>
+            <div class="card-desc" id="statMaxWin">0.00 🪙</div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
 <script>
-// --- AUDIO SYNTHESIZER ---
+// --- AUDIO ENGINE ---
 const AudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+let soundEnabled = true;
+
 function playTone(freq, type = 'sine', duration = 0.08, vol = 0.08) {
+  if (!soundEnabled) return;
   if (AudioCtx.state === 'suspended') AudioCtx.resume();
   const osc = AudioCtx.createOscillator();
   const gain = AudioCtx.createGain();
@@ -309,60 +706,152 @@ function playTone(freq, type = 'sine', duration = 0.08, vol = 0.08) {
   osc.stop(AudioCtx.currentTime + duration);
 }
 
-// --- GAME STATE & CONFIG ---
+function toggleSound() {
+  soundEnabled = !soundEnabled;
+  document.getElementById('soundToggle').classList.toggle('on', soundEnabled);
+}
+
+// --- STATE MANAGEMENT ---
 let balance = 1000;
+let ambrosia = 0;
+let currentBet = 10;
+let currentRisk = 'medium';
+let currentRows = 8;
 let autoDropInterval = null;
+let currentSkin = 'lightning';
+
+let stats = { totalDrops: 0, maxWin: 0 };
+let shop = { midasLvl: 0, tributeLvl: 0, dupeLvl: 0 };
+let relics = { zeusCrown: false };
+let quests = { q1Progress: 0, q1Claimed: false };
+
+let godPowerCooldowns = { zeus: 0, poseidon: 0, hermes: 0 };
+
 const canvas = document.getElementById('plinkoCanvas');
 const ctx = canvas.getContext('2d');
 
-const rows = 8;
-const pegRadius = 5;
-const ballRadius = 4.5; // Reduced ball radius to prevent peg-trapping
-let gravity = 0.25;
+let gravity = 0.24;
+const pegRadius = 4.5;
+const ballRadius = 4.0;
 
 let pegs = [];
-let particles = [];
 let balls = [];
+let particles = [];
 let floatingTexts = [];
 
-// Upgrades State
-let upgrades = {
-  midas: { level: 0, baseCost: 100 },
-  tribute: { level: 0, baseCost: 150 },
-  gravity: { level: 0, baseCost: 200 }
+// Dynamic Multipliers Array
+const rawMultipliers = {
+  8: {
+    low:    [5.6, 2.1, 1.1, 1.0, 0.5, 1.0, 1.1, 2.1, 5.6],
+    medium: [13,  3.0, 1.3, 0.7, 0.4, 0.7, 1.3, 3.0, 13],
+    high:   [29,  4.0, 1.5, 0.3, 0.2, 0.3, 1.5, 4.0, 29]
+  },
+  10: {
+    low:    [8.9, 3.0, 1.4, 1.1, 1.0, 0.5, 1.0, 1.1, 1.4, 3.0, 8.9],
+    medium: [22,  5.0, 2.0, 1.4, 0.6, 0.4, 0.6, 1.4, 2.0, 5.0, 22],
+    high:   [76,  10,  3.0, 1.5, 0.3, 0.2, 0.3, 1.5, 3.0, 10,  76]
+  },
+  12: {
+    low:    [10,  3.0, 1.6, 1.2, 1.1, 1.0, 0.5, 1.0, 1.1, 1.2, 1.6, 3.0, 10],
+    medium: [33,  11,  4.0, 2.0, 1.1, 0.6, 0.3, 0.6, 1.1, 2.0, 4.0, 11,  33],
+    high:   [170, 24,  8.1, 2.0, 0.7, 0.2, 0.2, 0.2, 0.7, 2.0, 8.1, 24,  170]
+  },
+  14: {
+    low:    [15,  4.0, 1.9, 1.3, 1.2, 1.1, 1.0, 0.5, 1.0, 1.1, 1.2, 1.3, 1.9, 4.0, 15],
+    medium: [58,  15,  7.0, 4.0, 1.9, 1.0, 0.5, 0.2, 0.5, 1.0, 1.9, 4.0, 7.0, 15,  58],
+    high:   [420, 56,  18,  5.0, 1.9, 0.3, 0.2, 0.2, 0.2, 0.3, 1.9, 5.0, 18,  56,  420]
+  },
+  16: {
+    low:    [16,  9.0, 2.0, 1.4, 1.4, 1.2, 1.1, 1.0, 0.5, 1.0, 1.1, 1.2, 1.4, 1.4, 2.0, 9.0, 16],
+    medium: [110, 41,  10,  5.0, 3.0, 1.5, 1.0, 0.5, 0.3, 0.5, 1.0, 1.5, 3.0, 5.0, 10,  41,  110],
+    high:   [1000,130, 26,  9.0, 4.0, 2.0, 0.2, 0.2, 0.2, 0.2, 0.2, 2.0, 4.0, 9.0, 26,  130, 1000]
+  }
 };
 
-const baseMultipliers = {
-  low:    [5.6, 2.1, 1.1, 1.0, 0.5, 1.0, 1.1, 2.1, 5.6],
-  medium: [13,  3.0, 1.3, 0.7, 0.4, 0.7, 1.3, 3.0, 13],
-  high:   [29,  4.0, 1.5, 0.3, 0.2, 0.3, 1.5, 4.0, 29]
-};
+// --- CUSTOM UI CONTROLS ENGINE ---
+function toggleDropdown(id) {
+  const menu = document.querySelector(`#${id} .dropdown-menu`);
+  menu.classList.toggle('open');
+}
 
-let currentRisk = 'medium';
+// Close dropdowns on outside click
+window.addEventListener('click', (e) => {
+  if (!e.target.closest('.custom-dropdown')) {
+    document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('open'));
+  }
+});
 
-// --- BOARD INITIALIZATION ---
+function selectRisk(val, label) {
+  currentRisk = val;
+  document.getElementById('riskSelectedText').innerText = label;
+  initBoard();
+}
+
+function selectRows(count, label) {
+  currentRows = count;
+  document.getElementById('rowSelectedText').innerText = label;
+  initBoard();
+}
+
+function stepBet(amount) {
+  currentBet = Math.max(1, currentBet + amount);
+  updateBetDisplay();
+}
+
+function setBetPreset(preset) {
+  if (preset === 'min') currentBet = 1;
+  else if (preset === 'half') currentBet = Math.max(1, Math.floor(currentBet / 2));
+  else if (preset === 'double') currentBet = Math.floor(currentBet * 2);
+  else if (preset === 'max') currentBet = Math.floor(balance);
+  updateBetDisplay();
+}
+
+function updateBetDisplay() {
+  document.getElementById('betValueDisplay').innerText = `${currentBet} 🪙`;
+}
+
+function updateBalanceDisplay() {
+  document.getElementById('balanceDisplay').innerText = `${balance.toFixed(2)} 🪙`;
+  document.getElementById('ambrosiaDisplay').innerText = `${ambrosia} 🍇`;
+  
+  // Update Ascension Reward Calculation
+  const reward = Math.floor(balance / 10000);
+  document.getElementById('ascendRewardText').innerText = `Reward: ${reward} 🍇`;
+}
+
+// --- TABS ENGINE ---
+function switchTab(tabId) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+  event.target.classList.add('active');
+  document.getElementById(`tab-${tabId}`).classList.add('active');
+}
+
+// --- BOARD & PHYSICS GEOMETRY ---
 function initBoard() {
   pegs = [];
-  const startY = 50;
-  const rowSpacing = 44;
-  
-  for (let r = 0; r < rows; r++) {
+  const startY = 40;
+  const rowSpacing = (canvas.height - 100) / currentRows;
+
+  for (let r = 0; r < currentRows; r++) {
     const count = r + 3;
-    const spacing = 340 / (count + 1);
+    const spacing = (canvas.width - 40) / (count + 1);
     for (let c = 0; c < count; c++) {
       pegs.push({
-        x: 50 + spacing * (c + 1),
+        x: 20 + spacing * (c + 1),
         y: startY + r * rowSpacing,
-        pulse: 0
+        pulse: 0,
+        isZeusPeg: false
       });
     }
   }
 }
 
 function getBins() {
-  const multBoost = 1 + (upgrades.midas.level * 0.1);
-  const rawMults = baseMultipliers[currentRisk];
-  const binCount = rawMults.length;
+  const baseList = rawMultipliers[currentRows][currentRisk];
+  const multBoost = 1 + (shop.midasLvl * 0.10) + (relics.zeusCrown ? 0.25 : 0);
+  const binCount = baseList.length;
   const binWidth = canvas.width / binCount;
   const bins = [];
 
@@ -370,126 +859,40 @@ function getBins() {
     bins.push({
       x: i * binWidth,
       width: binWidth,
-      y: canvas.height - 40,
-      height: 35,
-      mult: parseFloat((rawMults[i] * multBoost).toFixed(2))
+      y: canvas.height - 35,
+      height: 30,
+      mult: parseFloat((baseList[i] * multBoost).toFixed(2))
     });
   }
   return bins;
 }
 
-// --- UPGRADES & TABS ---
-function switchTab(tabName) {
-  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-  
-  if (tabName === 'upgrades') {
-    document.querySelectorAll('.tab-btn')[0].classList.add('active');
-    document.getElementById('tab-upgrades').classList.add('active');
-  } else {
-    document.querySelectorAll('.tab-btn')[1].classList.add('active');
-    document.getElementById('tab-leaderboard').classList.add('active');
-    renderLeaderboard();
-  }
-}
-
-function buyUpgrade(type) {
-  const upg = upgrades[type];
-  const cost = Math.floor(upg.baseCost * Math.pow(1.5, upg.level));
-
-  if (balance >= cost) {
-    balance -= cost;
-    upg.level++;
-    if (type === 'gravity') gravity += 0.05;
-    updateBalanceDisplay();
-    updateUpgradeUI();
-    playTone(800, 'triangle', 0.2, 0.15);
-  }
-}
-
-function updateUpgradeUI() {
-  document.getElementById('midasCost').innerText = `Cost: ${Math.floor(upgrades.midas.baseCost * Math.pow(1.5, upgrades.midas.level))} 🪙 (Lvl ${upgrades.midas.level})`;
-  document.getElementById('tributeCost').innerText = `Cost: ${Math.floor(upgrades.tribute.baseCost * Math.pow(1.5, upgrades.tribute.level))} 🪙 (Lvl ${upgrades.tribute.level})`;
-  document.getElementById('gravityCost').innerText = `Cost: ${Math.floor(upgrades.gravity.baseCost * Math.pow(1.5, upgrades.gravity.level))} 🪙 (Lvl ${upgrades.gravity.level})`;
-}
-
-// Passive Income Interval
-setInterval(() => {
-  if (upgrades.tribute.level > 0) {
-    balance += upgrades.tribute.level * 2;
-    updateBalanceDisplay();
-  }
-}, 1000);
-
-// --- LEADERBOARD ---
-const pantheon = [
-  { name: "⚡ Zeus", score: 25000 },
-  { name: "🦉 Athena", score: 12500 },
-  { name: "🪙 Midas", score: 8000 },
-  { name: "🪽 Hermes", score: 3500 }
-];
-
-function renderLeaderboard() {
-  const list = document.getElementById('leaderboardList');
-  list.innerHTML = '';
-  
-  let currentScores = [...pantheon, { name: "🫵 You", score: Math.floor(balance) }];
-  currentScores.sort((a, b) => b.score - a.score);
-
-  currentScores.forEach((entry, idx) => {
-    const li = document.createElement('li');
-    li.className = 'leaderboard-item';
-    if (entry.name === "🫵 You") li.style.border = "1px solid var(--gold)";
-    li.innerHTML = `<span>#${idx + 1} ${entry.name}</span><span>${entry.score.toLocaleString()} 🪙</span>`;
-    list.appendChild(li);
-  });
-}
-
-// --- GAME LOGIC ---
-function updateRisk() { currentRisk = document.getElementById('riskSelect').value; }
-
-function adjustBet(factor) {
-  const input = document.getElementById('betInput');
-  input.value = Math.max(1, Math.floor(parseFloat(input.value) * factor));
-}
-
-function updateBalanceDisplay() {
-  document.getElementById('balanceDisplay').innerText = `${balance.toFixed(2)} 🪙`;
-}
-
-function addHistory(mult) {
-  const feed = document.getElementById('historyFeed');
-  const tag = document.createElement('div');
-  tag.className = 'history-tag';
-  tag.innerText = `${mult}x`;
-  
-  if (mult >= 3) { tag.style.background = '#f59e0b'; tag.style.color = '#000'; }
-  else if (mult >= 1) { tag.style.background = '#0284c7'; tag.style.color = '#fff'; }
-  else { tag.style.background = '#334155'; tag.style.color = '#94a3b8'; }
-
-  feed.prepend(tag);
-  if (feed.children.length > 5) feed.removeChild(feed.lastChild);
-}
-
+// --- GAME ACTIONS ---
 function dropBall() {
-  const betInput = document.getElementById('betInput');
-  const betAmount = parseFloat(betInput.value);
-
-  if (isNaN(betAmount) || betAmount <= 0 || betAmount > balance) {
+  if (balance < currentBet) {
     if (autoDropInterval) toggleAutoDrop();
     return;
   }
 
-  balance -= betAmount;
+  balance -= currentBet;
+  stats.totalDrops++;
+  quests.q1Progress++;
+  checkQuests();
   updateBalanceDisplay();
 
-  balls.push({
-    x: canvas.width / 2 + (Math.random() - 0.5) * 8,
-    y: 15,
-    vx: (Math.random() - 0.5) * 1.2,
-    vy: 0.5,
-    bet: betAmount
-  });
+  // Chance for duplicate orb upgrade
+  const dropCount = (Math.random() < shop.dupeLvl * 0.10) ? 2 : 1;
+
+  for (let d = 0; d < dropCount; d++) {
+    balls.push({
+      x: canvas.width / 2 + (Math.random() - 0.5) * 6,
+      y: 15,
+      vx: (Math.random() - 0.5) * 1.2,
+      vy: 0.5,
+      bet: currentBet,
+      skin: currentSkin
+    });
+  }
 }
 
 function toggleAutoDrop() {
@@ -500,19 +903,147 @@ function toggleAutoDrop() {
     btn.innerText = "Auto-Drop: OFF";
     btn.classList.remove('active');
   } else {
-    autoDropInterval = setInterval(dropBall, 300);
+    autoDropInterval = setInterval(dropBall, 250);
     btn.innerText = "Auto-Drop: ON";
     btn.classList.add('active');
   }
 }
 
-// --- ANIMATION & FIXED PHYSICS LOOP ---
+// --- GOD POWERS ---
+function triggerGodPower(power) {
+  if (godPowerCooldowns[power] > 0) return;
+
+  if (power === 'zeus') {
+    // Empower 5 random pegs
+    for (let i = 0; i < 5; i++) {
+      let randomPeg = pegs[Math.floor(Math.random() * pegs.length)];
+      randomPeg.isZeusPeg = true;
+    }
+    godPowerCooldowns.zeus = 15;
+    playTone(900, 'sawtooth', 0.3, 0.2);
+  } else if (power === 'poseidon') {
+    // Give all active balls upward surge boost
+    balls.forEach(b => { b.vy = -3; b.vx += (Math.random() - 0.5) * 4; });
+    godPowerCooldowns.poseidon = 20;
+    playTone(300, 'sine', 0.4, 0.2);
+  } else if (power === 'hermes') {
+    // Free 5 min orbs
+    for (let i = 0; i < 5; i++) {
+      balls.push({
+        x: canvas.width / 2 + (Math.random() - 0.5) * 10,
+        y: 15,
+        vx: (Math.random() - 0.5) * 2,
+        vy: 0.5,
+        bet: 1,
+        skin: 'lightning'
+      });
+    }
+    godPowerCooldowns.hermes = 10;
+  }
+
+  updateAbilityButtons();
+}
+
+// Cooldown Decrement Interval
+setInterval(() => {
+  ['zeus', 'poseidon', 'hermes'].forEach(p => {
+    if (godPowerCooldowns[p] > 0) {
+      godPowerCooldowns[p]--;
+    }
+  });
+  updateAbilityButtons();
+}, 1000);
+
+function updateAbilityButtons() {
+  ['zeus', 'poseidon', 'hermes'].forEach(p => {
+    const btn = document.getElementById(`ability${p.charAt(0).toUpperCase() + p.slice(1)}`);
+    if (godPowerCooldowns[p] > 0) {
+      btn.classList.add('cooldown');
+    } else {
+      btn.classList.remove('cooldown');
+    }
+  });
+}
+
+// --- SHOP & SYSTEM HUBS ---
+function buyShopUpgrade(type) {
+  if (type === 'midas') {
+    const cost = Math.floor(150 * Math.pow(1.6, shop.midasLvl));
+    if (balance >= cost) {
+      balance -= cost; shop.midasLvl++;
+      document.getElementById('midasCostText').innerText = `Cost: ${Math.floor(150 * Math.pow(1.6, shop.midasLvl))} 🪙`;
+    }
+  } else if (type === 'tribute') {
+    const cost = Math.floor(200 * Math.pow(1.5, shop.tributeLvl));
+    if (balance >= cost) {
+      balance -= cost; shop.tributeLvl++;
+      document.getElementById('tributeCostText').innerText = `Cost: ${Math.floor(200 * Math.pow(1.5, shop.tributeLvl))} 🪙`;
+    }
+  } else if (type === 'dupe') {
+    const cost = Math.floor(350 * Math.pow(1.8, shop.dupeLvl));
+    if (balance >= cost) {
+      balance -= cost; shop.dupeLvl++;
+      document.getElementById('dupeCostText').innerText = `Cost: ${Math.floor(350 * Math.pow(1.8, shop.dupeLvl))} 🪙`;
+    }
+  }
+  updateBalanceDisplay();
+}
+
+// Passive Tribute Income
+setInterval(() => {
+  if (shop.tributeLvl > 0) {
+    balance += shop.tributeLvl * 5;
+    updateBalanceDisplay();
+  }
+}, 1000);
+
+function ascend() {
+  const reward = Math.floor(balance / 10000);
+  if (reward < 1) return;
+
+  ambrosia += reward;
+  balance = 1000;
+  shop = { midasLvl: 0, tributeLvl: 0, dupeLvl: 0 };
+  updateBalanceDisplay();
+  playTone(1000, 'triangle', 0.5, 0.3);
+}
+
+function buyRelic(key) {
+  if (key === 'zeusCrown' && ambrosia >= 1 && !relics.zeusCrown) {
+    ambrosia -= 1;
+    relics.zeusCrown = true;
+    updateBalanceDisplay();
+  }
+}
+
+function checkQuests() {
+  const q1Desc = document.getElementById('quest1Desc');
+  const q1Btn = document.getElementById('quest1Btn');
+  q1Desc.innerText = `Drop 25 Orbs (${quests.q1Progress}/25)`;
+  if (quests.q1Progress >= 25 && !quests.q1Claimed) {
+    q1Btn.disabled = false;
+  }
+}
+
+function claimQuest(num) {
+  if (num === 1 && quests.q1Progress >= 25 && !quests.q1Claimed) {
+    balance += 100;
+    quests.q1Claimed = true;
+    document.getElementById('quest1Btn').innerText = "Claimed";
+    document.getElementById('quest1Btn').disabled = true;
+    updateBalanceDisplay();
+  }
+}
+
+function equipSkin(s) { currentSkin = s; }
+
+// --- ANIMATION & PHYSICS LOOP ---
 function update() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   const bins = getBins();
 
   // Draw Bins
-  bins.forEach((bin) => {
+  bins.forEach(bin => {
     let color = bin.mult >= 10 ? '#7f1d1d' : (bin.mult >= 2 ? '#b45309' : '#1e3a8a');
     ctx.fillStyle = color;
     ctx.beginPath();
@@ -520,9 +1051,9 @@ function update() {
     ctx.fill();
 
     ctx.fillStyle = '#fff';
-    ctx.font = '600 12px Fredoka';
+    ctx.font = '600 11px Fredoka';
     ctx.textAlign = 'center';
-    ctx.fillText(`${bin.mult}x`, bin.x + bin.width / 2, bin.y + 22);
+    ctx.fillText(`${bin.mult}x`, bin.x + bin.width / 2, bin.y + 19);
   });
 
   // Draw Pegs
@@ -530,17 +1061,18 @@ function update() {
     if (peg.pulse > 0) peg.pulse -= 0.05;
     ctx.beginPath();
     ctx.arc(peg.x, peg.y, pegRadius + peg.pulse * 2, 0, Math.PI * 2);
-    ctx.fillStyle = peg.pulse > 0 ? '#38bdf8' : '#fbbf24';
+    ctx.fillStyle = peg.isZeusPeg ? '#a855f7' : (peg.pulse > 0 ? '#38bdf8' : '#fbbf24');
     ctx.fill();
   });
 
-  // Update Balls & Anti-Stuck Physics
+  // Update Balls & Fixed Physics
   for (let i = balls.length - 1; i >= 0; i--) {
     let b = balls[i];
     b.vy += gravity;
     b.x += b.vx;
     b.y += b.vy;
 
+    // Peg collisions
     pegs.forEach(peg => {
       let dx = b.x - peg.x;
       let dy = b.y - peg.y;
@@ -552,30 +1084,40 @@ function update() {
         b.x = peg.x + Math.cos(angle) * minDist;
         b.y = peg.y + Math.sin(angle) * minDist;
 
-        // Anti-infinite bounce fix: Force downward velocity bias
-        let pushX = Math.cos(angle) * 2.2 + (Math.random() - 0.5) * 0.8;
-        let pushY = Math.max(0.6, Math.sin(angle) * 2.2 * 0.55); // Minimum downward force
-
-        b.vx = pushX;
-        b.vy = pushY;
+        // Anti-stuck physics bias downward
+        b.vx = Math.cos(angle) * 2.2 + (Math.random() - 0.5) * 0.8;
+        b.vy = Math.max(0.6, Math.sin(angle) * 2.2 * 0.55);
 
         peg.pulse = 1;
-        playTone(600 + Math.random() * 300);
+        playTone(550 + Math.random() * 250);
+
+        // Particle Burst
+        for (let p = 0; p < 3; p++) {
+          particles.push({
+            x: peg.x, y: peg.y,
+            vx: (Math.random() - 0.5) * 3, vy: (Math.random() - 0.5) * 3,
+            life: 0.8, color: peg.isZeusPeg ? '#a855f7' : '#fbbf24'
+          });
+        }
       }
     });
 
-    // Wall collision
+    // Wall bounces
     if (b.x - ballRadius < 0) { b.x = ballRadius; b.vx *= -0.5; }
     if (b.x + ballRadius > canvas.width) { b.x = canvas.width - ballRadius; b.vx *= -0.5; }
 
     // Bin collision
-    if (b.y + ballRadius >= canvas.height - 40) {
+    if (b.y + ballRadius >= canvas.height - 35) {
       let hitBin = bins.find(bin => b.x >= bin.x && b.x <= bin.x + bin.width) || bins[0];
       const payout = b.bet * hitBin.mult;
-      
+
       balance += payout;
+      if (payout > stats.maxWin) stats.maxWin = payout;
+
       updateBalanceDisplay();
-      addHistory(hitBin.mult);
+      document.getElementById('statTotalDrops').innerText = stats.totalDrops;
+      document.getElementById('statMaxWin').innerText = `${stats.maxWin.toFixed(2)} 🪙`;
+
       playTone(hitBin.mult >= 2 ? 880 : 440, 'triangle', 0.15, 0.15);
 
       floatingTexts.push({ text: `+${payout.toFixed(1)}`, x: b.x, y: b.y - 10, alpha: 1 });
@@ -583,22 +1125,34 @@ function update() {
       continue;
     }
 
-    // Draw Small Ball
+    // Draw Ball according to active Skin
     ctx.beginPath();
     ctx.arc(b.x, b.y, ballRadius, 0, Math.PI * 2);
-    ctx.fillStyle = '#38bdf8';
+    ctx.fillStyle = b.skin === 'fireball' ? '#ef4444' : '#38bdf8';
     ctx.fill();
+  }
+
+  // Draw Particles
+  for (let i = particles.length - 1; i >= 0; i--) {
+    let p = particles[i];
+    p.x += p.vx; p.y += p.vy; p.life -= 0.04;
+    if (p.life <= 0) particles.splice(i, 1);
+    else {
+      ctx.fillStyle = p.color;
+      ctx.globalAlpha = p.life;
+      ctx.beginPath(); ctx.arc(p.x, p.y, 2, 0, Math.PI * 2); ctx.fill();
+      ctx.globalAlpha = 1;
+    }
   }
 
   // Draw Floating Text
   for (let i = floatingTexts.length - 1; i >= 0; i--) {
     let ft = floatingTexts[i];
-    ft.y -= 1;
-    ft.alpha -= 0.02;
+    ft.y -= 1; ft.alpha -= 0.02;
     if (ft.alpha <= 0) floatingTexts.splice(i, 1);
     else {
       ctx.fillStyle = `rgba(251, 191, 36, ${ft.alpha})`;
-      ctx.font = '600 14px Fredoka';
+      ctx.font = '600 13px Fredoka';
       ctx.textAlign = 'center';
       ctx.fillText(ft.text, ft.x, ft.y);
     }
@@ -607,9 +1161,9 @@ function update() {
   requestAnimationFrame(update);
 }
 
-// Start
+// START ENGINE
 initBoard();
-updateUpgradeUI();
+updateBalanceDisplay();
 update();
 </script>
 </body>
