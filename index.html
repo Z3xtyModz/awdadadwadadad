@@ -4,14 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Plinko of Olympus</title>
+  <!-- Google Font: Fredoka -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+
   <style>
     :root {
-      --gold: #f59e0b;
-      --gold-bright: #fbbf24;
-      --crimson: #7f1d1d;
-      --lightning: #38bdf8;
+      --gold: #fbbf24;
+      --gold-dark: #b45309;
+      --sky: #38bdf8;
+      --purple: #818cf8;
       --bg: #0f172a;
-      --card-bg: #1e293b;
+      --panel: rgba(30, 41, 59, 0.9);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -19,171 +24,205 @@
     body {
       background: radial-gradient(circle at top, #1e1b4b 0%, #0f172a 100%);
       color: #f8fafc;
-      font-family: 'Georgia', serif;
+      font-family: 'Fredoka', cursive, sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
       min-height: 100vh;
-      padding: 20px;
+      padding: 15px;
+      user-select: none;
     }
 
     h1 {
-      font-size: 2.2rem;
-      color: var(--gold-bright);
-      text-shadow: 0 0 12px rgba(251, 191, 36, 0.4), 2px 2px 0 #000;
-      margin-bottom: 15px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
+      font-size: 2.5rem;
+      color: var(--gold);
+      text-shadow: 0 4px 0 #78350f, 0 0 15px rgba(251, 191, 36, 0.5);
+      margin-bottom: 12px;
+      letter-spacing: 1px;
     }
 
-    .game-container {
+    .main-layout {
       display: flex;
       flex-wrap: wrap;
-      gap: 20px;
+      gap: 15px;
       justify-content: center;
-      max-width: 950px;
+      max-width: 1050px;
       width: 100%;
     }
 
     .panel {
-      background: rgba(30, 41, 59, 0.85);
-      border: 2px solid #b45309;
-      border-radius: 16px;
-      padding: 20px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(245, 158, 11, 0.15);
+      background: var(--panel);
+      border: 3px solid var(--gold-dark);
+      border-radius: 20px;
+      padding: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
       backdrop-filter: blur(8px);
     }
 
     /* Controls Panel */
     .controls {
       flex: 1;
-      min-width: 280px;
-      max-width: 320px;
+      min-width: 260px;
+      max-width: 300px;
       display: flex;
       flex-direction: column;
-      gap: 16px;
-      font-family: system-ui, sans-serif;
+      gap: 12px;
     }
 
     .stat-box {
       background: #0f172a;
-      border: 1px solid #334155;
-      padding: 12px;
-      border-radius: 10px;
+      border: 2px solid #334155;
+      padding: 10px;
+      border-radius: 14px;
       text-align: center;
     }
 
-    .stat-label { font-size: 0.8rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
-    .stat-value { font-size: 1.5rem; font-weight: bold; color: var(--gold-bright); font-family: 'Georgia', serif; }
+    .stat-label { font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; }
+    .stat-value { font-size: 1.6rem; color: var(--gold); }
 
-    .control-group {
+    .control-group { display: flex; flex-direction: column; gap: 4px; }
+    label { font-size: 0.85rem; color: #cbd5e1; }
+
+    input, select {
+      background: #0f172a;
+      border: 2px solid #475569;
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-family: 'Fredoka', sans-serif;
+      font-size: 1rem;
+      outline: none;
+    }
+
+    .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+
+    button {
+      font-family: 'Fredoka', sans-serif;
+      padding: 8px;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.1s ease;
+      background: #334155;
+      color: #fff;
+      box-shadow: 0 3px 0 #1e293b;
+    }
+
+    button:hover { transform: translateY(-1px); }
+    button:active { transform: translateY(2px); box-shadow: none; }
+
+    .btn-drop {
+      background: linear-gradient(180deg, #fbbf24 0%, #d97706 100%);
+      color: #000;
+      font-size: 1.25rem;
+      padding: 12px;
+      box-shadow: 0 4px 0 #78350f;
+    }
+
+    .btn-auto {
+      background: #38bdf8;
+      color: #000;
+      box-shadow: 0 3px 0 #0284c7;
+    }
+
+    .btn-auto.active {
+      background: #ef4444;
+      color: #fff;
+      box-shadow: 0 3px 0 #991b1b;
+    }
+
+    /* Tabs & Side Content */
+    .tab-section {
+      flex: 1;
+      min-width: 260px;
+      max-width: 300px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .tab-buttons { display: flex; gap: 6px; }
+    .tab-btn { flex: 1; background: #1e293b; border: 2px solid #334155; }
+    .tab-btn.active { background: var(--gold-dark); border-color: var(--gold); }
+
+    .tab-content { display: none; flex-direction: column; gap: 10px; }
+    .tab-content.active { display: flex; }
+
+    /* Upgrades UI */
+    .upgrade-card {
+      background: #0f172a;
+      border: 2px solid #334155;
+      border-radius: 12px;
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .upgrade-info { font-size: 0.8rem; }
+    .upgrade-title { font-size: 0.95rem; color: var(--gold); }
+
+    /* Leaderboard UI */
+    .leaderboard-list {
+      list-style: none;
       display: flex;
       flex-direction: column;
       gap: 6px;
     }
 
-    label { font-size: 0.85rem; color: #cbd5e1; font-weight: 600; }
-
-    input, select {
+    .leaderboard-item {
       background: #0f172a;
-      border: 1px solid #475569;
-      color: #fff;
-      padding: 10px;
-      border-radius: 8px;
-      font-size: 1rem;
-      outline: none;
-    }
-
-    .btn-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
-
-    button {
-      padding: 10px;
-      border: none;
-      border-radius: 8px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      background: #334155;
-      color: #fff;
-    }
-
-    button:hover { background: #475569; }
-
-    .btn-drop {
-      background: linear-gradient(180deg, #f59e0b 0%, #b45309 100%);
-      color: #000;
-      font-size: 1.2rem;
-      padding: 14px;
+      padding: 8px 12px;
       border-radius: 10px;
-      box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-top: 10px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
     }
-
-    .btn-drop:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(245, 158, 11, 0.6);
-    }
-
-    .btn-drop:active { transform: translateY(1px); }
 
     /* Canvas Board */
-    .board-container {
-      position: relative;
-    }
+    .board-container { display: flex; flex-direction: column; align-items: center; }
 
     canvas {
       background: radial-gradient(circle at center, #1e293b 0%, #090d16 100%);
-      border-radius: 12px;
-      display: block;
+      border-radius: 16px;
     }
 
-    /* History Feed */
     .history-feed {
       display: flex;
       gap: 6px;
-      overflow-x: hidden;
-      max-width: 480px;
-      height: 35px;
+      overflow: hidden;
+      max-width: 440px;
+      height: 32px;
       align-items: center;
-      margin-top: 10px;
+      margin-top: 8px;
     }
 
     .history-tag {
-      padding: 4px 10px;
+      padding: 3px 8px;
       border-radius: 6px;
       font-size: 0.8rem;
-      font-weight: bold;
-      animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      font-family: system-ui, sans-serif;
+      animation: pop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
-    @keyframes popIn {
-      from { transform: scale(0); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
+    @keyframes pop { from { transform: scale(0); } to { transform: scale(1); } }
   </style>
 </head>
 <body>
 
-  <h1>⚡ Plinko of Olympus ⚡</h1>
+  <h1>⚡ PLINKO OF OLYMPUS ⚡</h1>
 
-  <div class="game-container">
-    <!-- Controls Sidebar -->
+  <div class="main-layout">
+    <!-- Betting Controls Panel -->
     <div class="panel controls">
       <div class="stat-box">
-        <div class="stat-label">Treasury Balance</div>
-        <div class="stat-value" id="balanceDisplay">1,000.00 🏛️</div>
+        <div class="stat-label">Treasury</div>
+        <div class="stat-value" id="balanceDisplay">1,000.00 🪙</div>
       </div>
 
       <div class="control-group">
-        <label>Bet Amount (Gold Denarii)</label>
-        <input type="number" id="betInput" value="10" min="1" max="1000">
+        <label>Bet Amount</label>
+        <input type="number" id="betInput" value="10" min="1">
         <div class="btn-grid">
           <button onclick="adjustBet(0.5)">½x</button>
           <button onclick="adjustBet(2)">2x</button>
@@ -191,7 +230,7 @@
       </div>
 
       <div class="control-group">
-        <label>God's Favor (Risk Level)</label>
+        <label>God's Favor (Risk)</label>
         <select id="riskSelect" onchange="updateRisk()">
           <option value="low">Hermes (Low Risk)</option>
           <option value="medium" selected>Athena (Medium Risk)</option>
@@ -200,20 +239,63 @@
       </div>
 
       <button class="btn-drop" onclick="dropBall()">Drop Orb ⚡</button>
+      <button class="btn-auto" id="autoBtn" onclick="toggleAutoDrop()">Auto-Drop: OFF</button>
     </div>
 
     <!-- Main Game Board -->
     <div class="panel board-container">
-      <canvas id="plinkoCanvas" width="480" height="520"></canvas>
+      <canvas id="plinkoCanvas" width="440" height="480"></canvas>
       <div class="history-feed" id="historyFeed"></div>
+    </div>
+
+    <!-- Tabs: Upgrades & Leaderboards -->
+    <div class="panel tab-section">
+      <div class="tab-buttons">
+        <button class="tab-btn active" onclick="switchTab('upgrades')">Upgrades</button>
+        <button class="tab-btn" onclick="switchTab('leaderboard')">Pantheon</button>
+      </div>
+
+      <!-- Upgrades Tab -->
+      <div class="tab-content active" id="tab-upgrades">
+        <div class="upgrade-card">
+          <div class="upgrade-info">
+            <div class="upgrade-title">Midas Blessing</div>
+            <div>+10% All Multipliers</div>
+            <div style="color:var(--gold)" id="midasCost">Cost: 100 🪙</div>
+          </div>
+          <button onclick="buyUpgrade('midas')">Buy</button>
+        </div>
+
+        <div class="upgrade-card">
+          <div class="upgrade-info">
+            <div class="upgrade-title">Temple Tribute</div>
+            <div>+2 Passive 🪙/sec</div>
+            <div style="color:var(--gold)" id="tributeCost">Cost: 150 🪙</div>
+          </div>
+          <button onclick="buyUpgrade('tribute')">Buy</button>
+        </div>
+
+        <div class="upgrade-card">
+          <div class="upgrade-info">
+            <div class="upgrade-title">Gravitational Might</div>
+            <div>Faster Drops & Physics</div>
+            <div style="color:var(--gold)" id="gravityCost">Cost: 200 🪙</div>
+          </div>
+          <button onclick="buyUpgrade('gravity')">Buy</button>
+        </div>
+      </div>
+
+      <!-- Leaderboard Tab -->
+      <div class="tab-content" id="tab-leaderboard">
+        <ul class="leaderboard-list" id="leaderboardList"></ul>
+      </div>
     </div>
   </div>
 
 <script>
-// --- AUDIO SYNTHESIZER (Zero external asset files) ---
+// --- AUDIO SYNTHESIZER ---
 const AudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-function playTone(freq, type = 'sine', duration = 0.1, vol = 0.1) {
+function playTone(freq, type = 'sine', duration = 0.08, vol = 0.08) {
   if (AudioCtx.state === 'suspended') AudioCtx.resume();
   const osc = AudioCtx.createOscillator();
   const gain = AudioCtx.createGain();
@@ -227,32 +309,30 @@ function playTone(freq, type = 'sine', duration = 0.1, vol = 0.1) {
   osc.stop(AudioCtx.currentTime + duration);
 }
 
-function playPegSound() { playTone(600 + Math.random() * 300, 'sine', 0.08, 0.08); }
-function playWinSound(isBig) {
-  if (isBig) {
-    [523, 659, 783, 1046].forEach((f, i) => setTimeout(() => playTone(f, 'triangle', 0.3, 0.2), i * 80));
-  } else {
-    playTone(440, 'triangle', 0.15, 0.15);
-  }
-}
-
-// --- GAME CONFIG & STATE ---
+// --- GAME STATE & CONFIG ---
 let balance = 1000;
+let autoDropInterval = null;
 const canvas = document.getElementById('plinkoCanvas');
 const ctx = canvas.getContext('2d');
 
 const rows = 8;
 const pegRadius = 5;
-const ballRadius = 8;
-const gravity = 0.22;
-const bounceDamping = 0.55;
+const ballRadius = 4.5; // Reduced ball radius to prevent peg-trapping
+let gravity = 0.25;
 
 let pegs = [];
 let particles = [];
 let balls = [];
 let floatingTexts = [];
 
-const multipliers = {
+// Upgrades State
+let upgrades = {
+  midas: { level: 0, baseCost: 100 },
+  tribute: { level: 0, baseCost: 150 },
+  gravity: { level: 0, baseCost: 200 }
+};
+
+const baseMultipliers = {
   low:    [5.6, 2.1, 1.1, 1.0, 0.5, 1.0, 1.1, 2.1, 5.6],
   medium: [13,  3.0, 1.3, 0.7, 0.4, 0.7, 1.3, 3.0, 13],
   high:   [29,  4.0, 1.5, 0.3, 0.2, 0.3, 1.5, 4.0, 29]
@@ -260,18 +340,18 @@ const multipliers = {
 
 let currentRisk = 'medium';
 
-// --- INIT BOARD GEOMETRY ---
+// --- BOARD INITIALIZATION ---
 function initBoard() {
   pegs = [];
-  const startY = 60;
+  const startY = 50;
   const rowSpacing = 44;
   
   for (let r = 0; r < rows; r++) {
     const count = r + 3;
-    const spacing = 360 / (count + 1);
+    const spacing = 340 / (count + 1);
     for (let c = 0; c < count; c++) {
       pegs.push({
-        x: 60 + spacing * (c + 1),
+        x: 50 + spacing * (c + 1),
         y: startY + r * rowSpacing,
         pulse: 0
       });
@@ -280,8 +360,9 @@ function initBoard() {
 }
 
 function getBins() {
-  const currentMults = multipliers[currentRisk];
-  const binCount = currentMults.length;
+  const multBoost = 1 + (upgrades.midas.level * 0.1);
+  const rawMults = baseMultipliers[currentRisk];
+  const binCount = rawMults.length;
   const binWidth = canvas.width / binCount;
   const bins = [];
 
@@ -291,25 +372,89 @@ function getBins() {
       width: binWidth,
       y: canvas.height - 40,
       height: 35,
-      mult: currentMults[i]
+      mult: parseFloat((rawMults[i] * multBoost).toFixed(2))
     });
   }
   return bins;
 }
 
-// --- UI HELPERS ---
-function updateRisk() {
-  currentRisk = document.getElementById('riskSelect').value;
+// --- UPGRADES & TABS ---
+function switchTab(tabName) {
+  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  
+  if (tabName === 'upgrades') {
+    document.querySelectorAll('.tab-btn')[0].classList.add('active');
+    document.getElementById('tab-upgrades').classList.add('active');
+  } else {
+    document.querySelectorAll('.tab-btn')[1].classList.add('active');
+    document.getElementById('tab-leaderboard').classList.add('active');
+    renderLeaderboard();
+  }
 }
+
+function buyUpgrade(type) {
+  const upg = upgrades[type];
+  const cost = Math.floor(upg.baseCost * Math.pow(1.5, upg.level));
+
+  if (balance >= cost) {
+    balance -= cost;
+    upg.level++;
+    if (type === 'gravity') gravity += 0.05;
+    updateBalanceDisplay();
+    updateUpgradeUI();
+    playTone(800, 'triangle', 0.2, 0.15);
+  }
+}
+
+function updateUpgradeUI() {
+  document.getElementById('midasCost').innerText = `Cost: ${Math.floor(upgrades.midas.baseCost * Math.pow(1.5, upgrades.midas.level))} 🪙 (Lvl ${upgrades.midas.level})`;
+  document.getElementById('tributeCost').innerText = `Cost: ${Math.floor(upgrades.tribute.baseCost * Math.pow(1.5, upgrades.tribute.level))} 🪙 (Lvl ${upgrades.tribute.level})`;
+  document.getElementById('gravityCost').innerText = `Cost: ${Math.floor(upgrades.gravity.baseCost * Math.pow(1.5, upgrades.gravity.level))} 🪙 (Lvl ${upgrades.gravity.level})`;
+}
+
+// Passive Income Interval
+setInterval(() => {
+  if (upgrades.tribute.level > 0) {
+    balance += upgrades.tribute.level * 2;
+    updateBalanceDisplay();
+  }
+}, 1000);
+
+// --- LEADERBOARD ---
+const pantheon = [
+  { name: "⚡ Zeus", score: 25000 },
+  { name: "🦉 Athena", score: 12500 },
+  { name: "🪙 Midas", score: 8000 },
+  { name: "🪽 Hermes", score: 3500 }
+];
+
+function renderLeaderboard() {
+  const list = document.getElementById('leaderboardList');
+  list.innerHTML = '';
+  
+  let currentScores = [...pantheon, { name: "🫵 You", score: Math.floor(balance) }];
+  currentScores.sort((a, b) => b.score - a.score);
+
+  currentScores.forEach((entry, idx) => {
+    const li = document.createElement('li');
+    li.className = 'leaderboard-item';
+    if (entry.name === "🫵 You") li.style.border = "1px solid var(--gold)";
+    li.innerHTML = `<span>#${idx + 1} ${entry.name}</span><span>${entry.score.toLocaleString()} 🪙</span>`;
+    list.appendChild(li);
+  });
+}
+
+// --- GAME LOGIC ---
+function updateRisk() { currentRisk = document.getElementById('riskSelect').value; }
 
 function adjustBet(factor) {
   const input = document.getElementById('betInput');
-  let val = Math.max(1, Math.floor(parseFloat(input.value) * factor));
-  input.value = val;
+  input.value = Math.max(1, Math.floor(parseFloat(input.value) * factor));
 }
 
 function updateBalanceDisplay() {
-  document.getElementById('balanceDisplay').innerText = `${balance.toFixed(2)} 🏛️`;
+  document.getElementById('balanceDisplay').innerText = `${balance.toFixed(2)} 🪙`;
 }
 
 function addHistory(mult) {
@@ -318,101 +463,84 @@ function addHistory(mult) {
   tag.className = 'history-tag';
   tag.innerText = `${mult}x`;
   
-  if (mult >= 3) {
-    tag.style.background = '#f59e0b';
-    tag.style.color = '#000';
-  } else if (mult >= 1) {
-    tag.style.background = '#0284c7';
-    tag.style.color = '#fff';
-  } else {
-    tag.style.background = '#334155';
-    tag.style.color = '#94a3b8';
-  }
+  if (mult >= 3) { tag.style.background = '#f59e0b'; tag.style.color = '#000'; }
+  else if (mult >= 1) { tag.style.background = '#0284c7'; tag.style.color = '#fff'; }
+  else { tag.style.background = '#334155'; tag.style.color = '#94a3b8'; }
 
   feed.prepend(tag);
-  if (feed.children.length > 6) feed.removeChild(feed.lastChild);
+  if (feed.children.length > 5) feed.removeChild(feed.lastChild);
 }
 
-// --- GAME LOGIC ---
 function dropBall() {
   const betInput = document.getElementById('betInput');
   const betAmount = parseFloat(betInput.value);
 
   if (isNaN(betAmount) || betAmount <= 0 || betAmount > balance) {
-    alert("Insufficient Gold Denarii!");
+    if (autoDropInterval) toggleAutoDrop();
     return;
   }
 
   balance -= betAmount;
   updateBalanceDisplay();
 
-  // Spawn ball near apex with tiny randomized horizontal push
   balls.push({
-    x: canvas.width / 2 + (Math.random() - 0.5) * 6,
-    y: 20,
-    vx: (Math.random() - 0.5) * 1.5,
-    vy: 0,
+    x: canvas.width / 2 + (Math.random() - 0.5) * 8,
+    y: 15,
+    vx: (Math.random() - 0.5) * 1.2,
+    vy: 0.5,
     bet: betAmount
   });
 }
 
-function spawnParticles(x, y, color, count = 6) {
-  for (let i = 0; i < count; i++) {
-    particles.push({
-      x: x, y: y,
-      vx: (Math.random() - 0.5) * 4,
-      vy: (Math.random() - 0.5) * 4,
-      life: 1,
-      color: color
-    });
+function toggleAutoDrop() {
+  const btn = document.getElementById('autoBtn');
+  if (autoDropInterval) {
+    clearInterval(autoDropInterval);
+    autoDropInterval = null;
+    btn.innerText = "Auto-Drop: OFF";
+    btn.classList.remove('active');
+  } else {
+    autoDropInterval = setInterval(dropBall, 300);
+    btn.innerText = "Auto-Drop: ON";
+    btn.classList.add('active');
   }
 }
 
-// --- ANIMATION LOOP ---
+// --- ANIMATION & FIXED PHYSICS LOOP ---
 function update() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-
   const bins = getBins();
 
-  // 1. Draw Multiplier Bins
+  // Draw Bins
   bins.forEach((bin) => {
-    let color = '#334155';
-    if (bin.mult >= 10) color = '#7f1d1d';
-    else if (bin.mult >= 2) color = '#b45309';
-    else if (bin.mult >= 1) color = '#1e3a8a';
-
+    let color = bin.mult >= 10 ? '#7f1d1d' : (bin.mult >= 2 ? '#b45309' : '#1e3a8a');
     ctx.fillStyle = color;
     ctx.beginPath();
     ctx.roundRect(bin.x + 2, bin.y, bin.width - 4, bin.height, 6);
     ctx.fill();
 
     ctx.fillStyle = '#fff';
-    ctx.font = 'bold 12px system-ui';
+    ctx.font = '600 12px Fredoka';
     ctx.textAlign = 'center';
     ctx.fillText(`${bin.mult}x`, bin.x + bin.width / 2, bin.y + 22);
   });
 
-  // 2. Draw & Update Pegs
+  // Draw Pegs
   pegs.forEach(peg => {
     if (peg.pulse > 0) peg.pulse -= 0.05;
-
     ctx.beginPath();
     ctx.arc(peg.x, peg.y, pegRadius + peg.pulse * 2, 0, Math.PI * 2);
     ctx.fillStyle = peg.pulse > 0 ? '#38bdf8' : '#fbbf24';
-    ctx.shadowColor = peg.pulse > 0 ? '#38bdf8' : '#f59e0b';
-    ctx.shadowBlur = peg.pulse > 0 ? 12 : 4;
     ctx.fill();
-    ctx.shadowBlur = 0; // Reset shadow
   });
 
-  // 3. Update & Draw Balls
+  // Update Balls & Anti-Stuck Physics
   for (let i = balls.length - 1; i >= 0; i--) {
     let b = balls[i];
     b.vy += gravity;
     b.x += b.vx;
     b.y += b.vy;
 
-    // Peg collisions
     pegs.forEach(peg => {
       let dx = b.x - peg.x;
       let dy = b.y - peg.y;
@@ -424,85 +552,53 @@ function update() {
         b.x = peg.x + Math.cos(angle) * minDist;
         b.y = peg.y + Math.sin(angle) * minDist;
 
-        // Bounce physics with random jitter
-        b.vx = Math.cos(angle) * 2.8 + (Math.random() - 0.5) * 0.8;
-        b.vy = Math.sin(angle) * 2.8 * bounceDamping;
+        // Anti-infinite bounce fix: Force downward velocity bias
+        let pushX = Math.cos(angle) * 2.2 + (Math.random() - 0.5) * 0.8;
+        let pushY = Math.max(0.6, Math.sin(angle) * 2.2 * 0.55); // Minimum downward force
+
+        b.vx = pushX;
+        b.vy = pushY;
 
         peg.pulse = 1;
-        playPegSound();
-        spawnParticles(peg.x, peg.y, '#fbbf24', 4);
+        playTone(600 + Math.random() * 300);
       }
     });
 
-    // Outer wall boundaries
+    // Wall collision
     if (b.x - ballRadius < 0) { b.x = ballRadius; b.vx *= -0.5; }
     if (b.x + ballRadius > canvas.width) { b.x = canvas.width - ballRadius; b.vx *= -0.5; }
 
-    // Bin collision detection
+    // Bin collision
     if (b.y + ballRadius >= canvas.height - 40) {
-      // Determine landing bin
-      let hitBin = bins.find(bin => b.x >= bin.x && b.x <= bin.x + bin.width);
-      if (!hitBin) hitBin = bins[0];
-
+      let hitBin = bins.find(bin => b.x >= bin.x && b.x <= bin.x + bin.width) || bins[0];
       const payout = b.bet * hitBin.mult;
+      
       balance += payout;
       updateBalanceDisplay();
       addHistory(hitBin.mult);
-      playWinSound(hitBin.mult >= 2);
+      playTone(hitBin.mult >= 2 ? 880 : 440, 'triangle', 0.15, 0.15);
 
-      // Floating text effect
-      floatingTexts.push({
-        text: `+${payout.toFixed(1)}`,
-        x: b.x,
-        y: b.y - 10,
-        alpha: 1
-      });
-
-      spawnParticles(b.x, b.y, hitBin.mult >= 2 ? '#fbbf24' : '#38bdf8', 12);
+      floatingTexts.push({ text: `+${payout.toFixed(1)}`, x: b.x, y: b.y - 10, alpha: 1 });
       balls.splice(i, 1);
       continue;
     }
 
-    // Draw glowing Orb
+    // Draw Small Ball
     ctx.beginPath();
     ctx.arc(b.x, b.y, ballRadius, 0, Math.PI * 2);
     ctx.fillStyle = '#38bdf8';
-    ctx.shadowColor = '#06b6d4';
-    ctx.shadowBlur = 10;
     ctx.fill();
-    ctx.shadowBlur = 0;
   }
 
-  // 4. Update Particles
-  for (let i = particles.length - 1; i >= 0; i--) {
-    let p = particles[i];
-    p.x += p.vx;
-    p.y += p.vy;
-    p.life -= 0.04;
-
-    if (p.life <= 0) {
-      particles.splice(i, 1);
-    } else {
-      ctx.fillStyle = p.color;
-      ctx.globalAlpha = p.life;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, 2.5, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.globalAlpha = 1;
-    }
-  }
-
-  // 5. Update Floating Text
+  // Draw Floating Text
   for (let i = floatingTexts.length - 1; i >= 0; i--) {
     let ft = floatingTexts[i];
     ft.y -= 1;
     ft.alpha -= 0.02;
-
-    if (ft.alpha <= 0) {
-      floatingTexts.splice(i, 1);
-    } else {
+    if (ft.alpha <= 0) floatingTexts.splice(i, 1);
+    else {
       ctx.fillStyle = `rgba(251, 191, 36, ${ft.alpha})`;
-      ctx.font = 'bold 16px system-ui';
+      ctx.font = '600 14px Fredoka';
       ctx.textAlign = 'center';
       ctx.fillText(ft.text, ft.x, ft.y);
     }
@@ -513,6 +609,7 @@ function update() {
 
 // Start
 initBoard();
+updateUpgradeUI();
 update();
 </script>
 </body>
